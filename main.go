@@ -1,33 +1,15 @@
-package main
+package engine
 
 import (
-	"github.com/sirupsen/logrus"
+	"engine/common"
+	"engine/graphics"
+	"engine/objects"
+	"engine/physics"
+	"engine/scenes"
 	"go.uber.org/dig"
-	"runtime"
-	"window/common"
-	"window/graphics"
-	"window/objects"
-	"window/physics"
-	"window/scenes"
 )
 
-func main() {
-	runtime.LockOSThread()
-
-	c, err := buildContainer()
-	if err != nil {
-		logrus.WithError(err).Fatal("error building DI container")
-	}
-
-	if err := c.Invoke(func(app *App, demo *scenes.Demo) {
-		app.SetScene(demo)
-		app.Loop()
-	}); err != nil {
-		logrus.Fatal(err)
-	}
-}
-
-func buildContainer() (*dig.Container, error) {
+func BuildContainer() (*dig.Container, error) {
 	c := dig.New()
 
 	if err := c.Provide(common.NewConfig); err != nil {

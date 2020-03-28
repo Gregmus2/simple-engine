@@ -1,10 +1,10 @@
 package scenes
 
 import (
+	"engine/common"
+	"engine/graphics"
+	"engine/objects"
 	"github.com/ByteArena/box2d"
-	"window/common"
-	"window/graphics"
-	"window/objects"
 )
 
 type Demo struct {
@@ -24,19 +24,52 @@ func NewDemo(w *box2d.B2World, cfg *common.Config, f *objects.ObjectFactory) *De
 }
 
 func (d *Demo) Init() {
-	box := d.factory.NewBox(d.world, float64(d.cfg.Window.W/2), 20, 20, float32(d.cfg.Window.W), box2d.B2BodyType.B2_staticBody, graphics.Green())
-	box2 := d.factory.NewBox(d.world, 5, float64(d.cfg.Window.Center.Y), float32(d.cfg.Window.H), 10, box2d.B2BodyType.B2_staticBody, graphics.White())
-	box3 := d.factory.NewBox(d.world, float64(d.cfg.Window.W-5), float64(d.cfg.Window.Center.Y), float32(d.cfg.Window.H), 10, box2d.B2BodyType.B2_staticBody, graphics.White())
+	b := objects.BoxModel{
+		X:       float64(d.cfg.Window.W / 2),
+		Y:       20,
+		H:       20,
+		W:       float32(d.cfg.Window.W),
+		T:       box2d.B2BodyType.B2_staticBody,
+		Color:   *graphics.White(),
+		Density: 0,
+	}
+	box := d.factory.NewBox(b)
+
+	b.X = 5
+	b.Y = float64(d.cfg.Window.Center.Y)
+	b.H = float32(d.cfg.Window.H)
+	b.W = 10
+	box2 := d.factory.NewBox(b)
+
+	b.X = float64(d.cfg.Window.W - 5)
+	b.Y = float64(d.cfg.Window.Center.Y)
+	box3 := d.factory.NewBox(b)
+
+	c := objects.CircleModel{
+		X:       0,
+		Y:       0,
+		Radius:  10,
+		T:       box2d.B2BodyType.B2_dynamicBody,
+		Color:   *graphics.White(),
+		Density: 1,
+	}
 	for i := 0; i < 30; i++ {
-		circle := d.factory.NewCircle(d.world, float64(int(d.cfg.Window.Center.X)-i*10), float64(int(d.cfg.Window.Center.Y)-i*10), 10, graphics.White())
+		c.X = float64(int(d.cfg.Window.Center.X) - i*10)
+		c.Y = float64(int(d.cfg.Window.Center.Y) - i*10)
+		circle := d.factory.NewCircle(c)
+		circle.Fixture.SetFriction(0.2)
+		circle.Fixture.SetRestitution(1.0)
 		d.drawable = append(d.drawable, circle)
 	}
 	for i := 0; i < 30; i++ {
-		circle := d.factory.NewCircle(d.world, float64(int(d.cfg.Window.Center.X)+i*10), float64(int(d.cfg.Window.Center.Y)-i*10), 10, graphics.White())
+		c.X = float64(int(d.cfg.Window.Center.X) + i*10)
+		c.Y = float64(int(d.cfg.Window.Center.Y) + i*10)
+		circle := d.factory.NewCircle(c)
+		circle.Fixture.SetFriction(0.2)
+		circle.Fixture.SetRestitution(1.0)
 		d.drawable = append(d.drawable, circle)
 	}
-	//circle := d.factory.NewCircle(d.world, 0, 0, 10, graphics.White())
-	//d.drawable = append(d.drawable, circle)
+
 	d.drawable = append(d.drawable, box)
 	d.drawable = append(d.drawable, box2)
 	d.drawable = append(d.drawable, box3)

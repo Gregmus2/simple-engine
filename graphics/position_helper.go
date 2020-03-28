@@ -1,7 +1,7 @@
 package graphics
 
 import (
-	"window/common"
+	"engine/common"
 )
 
 type PositionHelper struct {

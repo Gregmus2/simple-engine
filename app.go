@@ -1,13 +1,13 @@
-package main
+package engine
 
 import (
+	"engine/common"
+	"engine/graphics"
 	"github.com/ByteArena/box2d"
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/sirupsen/logrus"
 	"time"
-	"window/common"
-	"window/graphics"
 )
 
 type App struct {
@@ -35,7 +35,6 @@ func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world 
 
 func (app *App) SetScene(scene common.Scene) {
 	app.scene = scene
-	time.Sleep(5 * time.Second)
 	scene.Init()
 }
 

@@ -1,9 +1,9 @@
 package graphics
 
 import (
+	"engine/common"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/pkg/errors"
-	"window/common"
 )
 
 type GLFW struct {

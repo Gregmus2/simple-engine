@@ -1,8 +1,8 @@
 package physics
 
 import (
+	"engine/common"
 	"github.com/ByteArena/box2d"
-	"window/common"
 )
 
 func NewWorld(cfg *common.Config) *box2d.B2World {

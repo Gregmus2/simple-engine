@@ -1,84 +1,38 @@
 package main
 
 import (
-	"github.com/go-gl/gl/v4.5-core/gl"
-	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/pkg/errors"
-	"log"
+	"engine"
+	"engine/scenes"
+	"github.com/sirupsen/logrus"
+	"go.uber.org/dig"
 	"runtime"
 )
 
 func main() {
 	runtime.LockOSThread()
 
-	window, err := initGLFW()
+	c, err := engine.BuildContainer()
 	if err != nil {
-		panic(err)
+		logrus.WithError(err).Fatal("error building DI container")
 	}
-	defer glfw.Terminate()
 
-	prog, err := initOpenGL()
+	err = buildContainer(c)
 	if err != nil {
-		panic(err)
+		logrus.WithError(err).Fatal("error building DI container")
 	}
 
-	for !window.ShouldClose() {
-		draw(window, prog)
+	if err := c.Invoke(func(app *engine.App, demo *scenes.Demo) {
+		app.SetScene(demo)
+		app.Loop()
+	}); err != nil {
+		logrus.Fatal(err)
 	}
 }
 
-func initGLFW() (*glfw.Window, error) {
-	if err := glfw.Init(); err != nil {
-		return nil, errors.Wrap(err, "failed to initialize glfw")
+func buildContainer(c *dig.Container) error {
+	if err := c.Provide(NewObjectFactory); err != nil {
+		return err
 	}
 
-	glfw.WindowHint(glfw.Resizable, glfw.False)
-	glfw.WindowHint(glfw.ContextVersionMajor, 4)
-	glfw.WindowHint(glfw.ContextVersionMinor, 1)
-	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
-	window, err := glfw.CreateWindow(600, 400, "Cube", nil, nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create window")
-	}
-	window.MakeContextCurrent()
-
-	return window, nil
-}
-
-func initOpenGL() (uint32, error) {
-	if err := gl.Init(); err != nil {
-		return 0, errors.Wrap(err, "failed to initialize openGL")
-	}
-	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL version", version)
-
-	prog := gl.CreateProgram()
-	gl.LinkProgram(prog)
-
-	return prog, nil
-}
-
-func draw(window *glfw.Window, program uint32) {
-	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.UseProgram(program)
-
-	glfw.PollEvents()
-	window.SwapBuffers()
-}
-
-func makeVao(points []float32) uint32 {
-	var vbo uint32
-	gl.GenBuffers(1, &vbo)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
-
-	var vao uint32
-	gl.GenVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
-
-	return vao
+	return nil
 }

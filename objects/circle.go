@@ -1,34 +1,42 @@
 package objects
 
 import (
+	"engine/graphics"
 	"github.com/ByteArena/box2d"
 	"github.com/go-gl/gl/v4.5-core/gl"
-	"window/graphics"
 )
 
-type Circle struct {
-	Radius float32
-	Body   *box2d.B2Body
-	prog   uint32
-	shape  *graphics.ShapeHelper
+type CircleModel struct {
+	X, Y    float64
+	Radius  float32
+	T       uint8
+	Color   graphics.Color
+	Density float64
 }
 
-func (m *ObjectFactory) NewCircle(w *box2d.B2World, x, y float64, radius float32, color *graphics.Color) *Circle {
+type Circle struct {
+	Radius  float32
+	Body    *box2d.B2Body
+	Fixture *box2d.B2Fixture
+	prog    uint32
+	shape   *graphics.ShapeHelper
+}
+
+func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 	bodyDef := box2d.MakeB2BodyDef()
-	bodyDef.Position = box2d.MakeB2Vec2(x/m.cfg.Physics.Scale, y/m.cfg.Physics.Scale)
-	bodyDef.Type = box2d.B2BodyType.B2_dynamicBody
-	body := w.CreateBody(&bodyDef)
+	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.cfg.Physics.Scale, model.Y/m.cfg.Physics.Scale)
+	bodyDef.Type = model.T
+	body := m.world.CreateBody(&bodyDef)
+
 	shape := box2d.MakeB2CircleShape()
-	shape.SetRadius(float64(radius) / m.cfg.Physics.Scale)
-	fixture := body.CreateFixture(&shape, 1.0)
-	fixture.SetFriction(0.2)
-	fixture.SetRestitution(1.0)
+	shape.SetRadius(float64(model.Radius) / m.cfg.Physics.Scale)
 
 	return &Circle{
-		Radius: radius,
-		Body:   body,
-		prog:   m.prog.GetByColor(color),
-		shape:  m.shape,
+		Radius:  model.Radius,
+		Body:    body,
+		Fixture: body.CreateFixture(&shape, model.Density),
+		prog:    m.prog.GetByColor(&model.Color),
+		shape:   m.shape,
 	}
 }
 
