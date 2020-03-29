@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 type App struct {
@@ -36,6 +35,7 @@ func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world 
 func (app *App) SetScene(scene common.Scene) {
 	app.scene = scene
 	scene.Init()
+	app.Window.SetKeyCallback(scene.Callback)
 }
 
 func (app *App) Loop() {
@@ -44,10 +44,11 @@ func (app *App) Loop() {
 		app.OnRender()
 
 		if app.quit {
-			app.Destroy()
 			break
 		}
 	}
+
+	app.Destroy()
 }
 
 func (app *App) Destroy() {

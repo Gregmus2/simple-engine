@@ -5,6 +5,7 @@ import (
 	"engine/graphics"
 	"engine/objects"
 	"github.com/ByteArena/box2d"
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 type Demo struct {
@@ -12,14 +13,16 @@ type Demo struct {
 	world    *box2d.B2World
 	cfg      *common.Config
 	factory  *objects.ObjectFactory
+	window   *glfw.Window
 }
 
-func NewDemo(w *box2d.B2World, cfg *common.Config, f *objects.ObjectFactory) *Demo {
+func NewDemo(w *box2d.B2World, cfg *common.Config, f *objects.ObjectFactory, win *glfw.Window) *Demo {
 	return &Demo{
 		drawable: make([]common.Drawable, 0),
 		world:    w,
 		cfg:      cfg,
 		factory:  f,
+		window:   win,
 	}
 }
 
@@ -81,4 +84,10 @@ func (d *Demo) Update() {
 
 func (d *Demo) Drawable() []common.Drawable {
 	return d.drawable
+}
+
+func (d *Demo) Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+	if key == glfw.KeyEscape && action == glfw.Press {
+		d.window.SetShouldClose(true)
+	}
 }

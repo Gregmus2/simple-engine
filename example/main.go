@@ -11,7 +11,7 @@ import (
 func main() {
 	runtime.LockOSThread()
 
-	c, err := engine.BuildContainer()
+	c, err := engine.BuildContainer("config.yaml")
 	if err != nil {
 		logrus.WithError(err).Fatal("error building DI container")
 	}

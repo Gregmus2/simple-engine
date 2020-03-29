@@ -24,23 +24,25 @@ type Config struct {
 	}
 }
 
-func NewConfig() (*Config, error) {
-	cfg := &Config{}
+func NewConfig(configFile string) func() (*Config, error) {
+	return func() (*Config, error) {
+		cfg := &Config{}
 
-	yamlFile, err := ioutil.ReadFile("config.yaml")
-	if err != nil {
-		return nil, err
+		yamlFile, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			return nil, err
+		}
+
+		err = yaml.Unmarshal(yamlFile, cfg)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Window.Center = &Pos{
+			X: float32(cfg.Window.W / 2),
+			Y: float32(cfg.Window.H / 2),
+		}
+
+		return cfg, nil
 	}
-
-	err = yaml.Unmarshal(yamlFile, cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Window.Center = &Pos{
-		X: float32(cfg.Window.W / 2),
-		Y: float32(cfg.Window.H / 2),
-	}
-
-	return cfg, nil
 }
