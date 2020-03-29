@@ -24,7 +24,11 @@ func BuildContainer(cfgFile string) (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(graphics.NewPositionHelper); err != nil {
+	if err := c.Provide(graphics.NewPosToUnitsConverter); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(graphics.NewPercentToPosConverter); err != nil {
 		return nil, err
 	}
 

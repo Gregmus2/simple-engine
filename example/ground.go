@@ -10,7 +10,7 @@ type Ground struct {
 	objects.Box
 }
 
-func (f *ObjectFactory) NewGround(x, y float64, h, w float32, color graphics.Color) {
+func (f *ObjectFactory) NewGround(x, y, h, w float64, color graphics.Color) {
 	b := objects.BoxModel{
 		X:       x,
 		Y:       y,

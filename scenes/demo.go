@@ -28,10 +28,10 @@ func NewDemo(w *box2d.B2World, cfg *common.Config, f *objects.ObjectFactory, win
 
 func (d *Demo) Init() {
 	b := objects.BoxModel{
-		X:       float64(d.cfg.Window.W / 2),
-		Y:       20,
-		H:       20,
-		W:       float32(d.cfg.Window.W),
+		X:       0,
+		Y:       5,
+		H:       10,
+		W:       100,
 		T:       box2d.B2BodyType.B2_staticBody,
 		Color:   *graphics.White(),
 		Density: 0,
@@ -39,34 +39,34 @@ func (d *Demo) Init() {
 	box := d.factory.NewBox(b)
 
 	b.X = 5
-	b.Y = float64(d.cfg.Window.Center.Y)
-	b.H = float32(d.cfg.Window.H)
-	b.W = 10
+	b.Y = 50
+	b.H = 100
+	b.W = 5
 	box2 := d.factory.NewBox(b)
 
-	b.X = float64(d.cfg.Window.W - 5)
-	b.Y = float64(d.cfg.Window.Center.Y)
+	b.X = 95
+	b.Y = 50
 	box3 := d.factory.NewBox(b)
 
 	c := objects.CircleModel{
 		X:       0,
 		Y:       0,
-		Radius:  10,
+		Radius:  1,
 		T:       box2d.B2BodyType.B2_dynamicBody,
 		Color:   *graphics.White(),
 		Density: 1,
 	}
 	for i := 0; i < 30; i++ {
-		c.X = float64(int(d.cfg.Window.Center.X) - i*10)
-		c.Y = float64(int(d.cfg.Window.Center.Y) - i*10)
+		c.X = float64(i)*1 + 50
+		c.Y = float64(i)*1 + 50
 		circle := d.factory.NewCircle(c)
 		circle.Fixture.SetFriction(0.2)
 		circle.Fixture.SetRestitution(1.0)
 		d.drawable = append(d.drawable, circle)
 	}
 	for i := 0; i < 30; i++ {
-		c.X = float64(int(d.cfg.Window.Center.X) + i*10)
-		c.Y = float64(int(d.cfg.Window.Center.Y) + i*10)
+		c.X = 50 - float64(i)*1
+		c.Y = 50 - float64(i)*1
 		circle := d.factory.NewCircle(c)
 		circle.Fixture.SetFriction(0.2)
 		circle.Fixture.SetRestitution(1.0)
