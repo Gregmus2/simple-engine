@@ -9,7 +9,7 @@ import (
 	"go.uber.org/dig"
 )
 
-func BuildContainer() (*dig.Container, error) {
+func BuildContainer(cfgFile string) (*dig.Container, error) {
 	c := dig.New()
 
 	if err := c.Provide(common.NewConfig); err != nil {
@@ -24,7 +24,11 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(graphics.NewPositionHelper); err != nil {
+	if err := c.Provide(graphics.NewPosToUnitsConverter); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(graphics.NewPercentToPosConverter); err != nil {
 		return nil, err
 	}
 

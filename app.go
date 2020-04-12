@@ -35,6 +35,7 @@ func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world 
 func (app *App) SetScene(scene common.Scene) {
 	app.scene = scene
 	scene.Init()
+	app.Window.SetKeyCallback(scene.Callback)
 }
 
 func (app *App) Loop() {
@@ -43,10 +44,11 @@ func (app *App) Loop() {
 		app.OnRender()
 
 		if app.quit {
-			app.Destroy()
 			break
 		}
 	}
+
+	app.Destroy()
 }
 
 func (app *App) Destroy() {

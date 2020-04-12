@@ -7,11 +7,10 @@ import (
 )
 
 type BoxModel struct {
-	X, Y    float64
-	H, W    float32
-	T       uint8
-	Color   graphics.Color
-	Density float64
+	X, Y, H, W float64
+	T          uint8
+	Color      graphics.Color
+	Density    float64
 }
 
 type Box struct {
@@ -24,6 +23,9 @@ type Box struct {
 }
 
 func (m *ObjectFactory) NewBox(model BoxModel) *Box {
+	model.X, model.Y = m.converter.X(model.X), m.converter.Y(model.Y)
+	model.W, model.H = m.converter.X(model.W), m.converter.Y(model.H)
+
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = model.T
 	bodyDef.FixedRotation = false
@@ -31,13 +33,13 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 	body := m.world.CreateBody(&bodyDef)
 
 	shape := box2d.MakeB2PolygonShape()
-	shape.SetAsBox(float64(model.W)/m.cfg.Physics.Scale/2, float64(model.H)/m.cfg.Physics.Scale/2)
+	shape.SetAsBox(model.W/m.cfg.Physics.Scale/2, model.H/m.cfg.Physics.Scale/2)
 
 	return &Box{
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
-		w:       model.W,
-		h:       model.H,
+		w:       float32(model.W),
+		h:       float32(model.H),
 		prog:    m.prog.GetByColor(&model.Color),
 		shape:   m.shape,
 	}

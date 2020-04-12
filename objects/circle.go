@@ -23,6 +23,8 @@ type Circle struct {
 }
 
 func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
+	model.X, model.Y, model.Radius = m.converter.X(model.X), m.converter.Y(model.Y), m.converter.Radius(model.Radius)
+
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.cfg.Physics.Scale, model.Y/m.cfg.Physics.Scale)
 	bodyDef.Type = model.T
