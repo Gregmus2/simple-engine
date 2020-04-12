@@ -1,8 +1,8 @@
 package main
 
 import (
-	"engine"
-	"engine/scenes"
+	"github.com/Gregmus2/simple-engine"
+	"github.com/Gregmus2/simple-engine/scenes"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	"runtime"

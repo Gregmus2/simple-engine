@@ -1,7 +1,7 @@
 package graphics
 
 import (
-	"engine/common"
+	"github.com/Gregmus2/simple-engine/common"
 )
 
 type PositionHelper struct {

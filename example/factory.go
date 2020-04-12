@@ -1,7 +1,7 @@
 package main
 
 import (
-	"engine/objects"
+	"github.com/Gregmus2/simple-engine/objects"
 )
 
 type ObjectFactory struct {

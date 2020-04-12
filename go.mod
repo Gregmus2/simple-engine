@@ -1,4 +1,4 @@
-module engine
+module github.com/Gregmus2/simple-engine
 
 go 1.13
 

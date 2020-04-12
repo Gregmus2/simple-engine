@@ -1,11 +1,11 @@
 package engine
 
 import (
-	"engine/common"
-	"engine/graphics"
-	"engine/objects"
-	"engine/physics"
-	"engine/scenes"
+	"github.com/Gregmus2/simple-engine/common"
+	"github.com/Gregmus2/simple-engine/graphics"
+	"github.com/Gregmus2/simple-engine/objects"
+	"github.com/Gregmus2/simple-engine/physics"
+	"github.com/Gregmus2/simple-engine/scenes"
 	"go.uber.org/dig"
 )
 

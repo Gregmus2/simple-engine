@@ -1,10 +1,10 @@
 package scenes
 
 import (
-	"engine/common"
-	"engine/graphics"
-	"engine/objects"
 	"github.com/ByteArena/box2d"
+	"github.com/Gregmus2/simple-engine/common"
+	"github.com/Gregmus2/simple-engine/graphics"
+	"github.com/Gregmus2/simple-engine/objects"
 )
 
 type Demo struct {
