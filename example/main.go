@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/Gregmus2/simple-engine"
-	"github.com/Gregmus2/simple-engine/scenes"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/dig"
 	"runtime"
@@ -21,8 +20,8 @@ func main() {
 		logrus.WithError(err).Fatal("error building DI container")
 	}
 
-	if err := c.Invoke(func(app *engine.App, demo *scenes.Demo) {
-		app.SetScene(demo)
+	if err := c.Invoke(func(app *engine.App, agents *Agents) {
+		app.SetScene(agents)
 		app.Loop()
 	}); err != nil {
 		logrus.Fatal(err)
@@ -31,6 +30,10 @@ func main() {
 
 func buildContainer(c *dig.Container) error {
 	if err := c.Provide(NewObjectFactory); err != nil {
+		return err
+	}
+
+	if err := c.Provide(NewAgents); err != nil {
 		return err
 	}
 

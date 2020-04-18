@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-const doublePI float64 = 2.0 * math.Pi
+const DoublePI float64 = 2.0 * math.Pi
 
 type ShapeHelper struct {
 	helper *PosToUnitsConverter
@@ -48,10 +48,24 @@ func (f *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
 
 	vertexes := make([]float32, (sides+2)*3)
 	for i := 0; i < (sides+2)*3; i += 3 {
-		vertexes[i] = x + (rW * float32(math.Cos(float64(i)/3*doublePI/float64(sides))))
-		vertexes[i+1] = y + (rH * float32(math.Sin(float64(i)/3*doublePI/float64(sides))))
+		vertexes[i] = x + (rW * float32(math.Cos(float64(i)/3*DoublePI/float64(sides))))
+		vertexes[i+1] = y + (rH * float32(math.Sin(float64(i)/3*DoublePI/float64(sides))))
 		vertexes[i+2] = 0
 	}
 
 	return vertexes
+}
+
+func (f *ShapeHelper) Line(x1, y1, x2, y2 float32) {
+	vertexes := []float32{
+		f.helper.X(x1), f.helper.Y(y1), 0,
+		f.helper.X(x2), f.helper.Y(y2), 0,
+	}
+
+	//gl.Enable(gl.LINE_SMOOTH)
+
+	vao := MakeVAO(vertexes)
+	gl.BindVertexArray(vao)
+	gl.LineWidth(5)
+	gl.DrawArrays(gl.LINES, 0, 2)
 }

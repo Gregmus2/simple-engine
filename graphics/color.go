@@ -7,14 +7,22 @@ type Color struct {
 	A float32
 }
 
-func Black() *Color {
-	return &Color{0, 0, 0, 1}
+func Black() Color {
+	return Color{0, 0, 0, 1}
 }
 
-func White() *Color {
-	return &Color{1, 1, 1, 1}
+func White() Color {
+	return Color{1, 1, 1, 1}
 }
 
-func Green() *Color {
-	return &Color{0, 1, 0, 1}
+func Blue() Color {
+	return Color{0, 0, 1, 1}
+}
+
+func Green() Color {
+	return Color{0, 1, 0, 1}
+}
+
+func Yellow() Color {
+	return Color{1, 1, 0, 1}
 }

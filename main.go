@@ -52,6 +52,10 @@ func BuildContainer(cfgFile string) (*dig.Container, error) {
 		return nil, err
 	}
 
+	if err := c.Provide(scenes.NewBase); err != nil {
+		return nil, err
+	}
+
 	if err := c.Provide(scenes.NewDemo); err != nil {
 		return nil, err
 	}
