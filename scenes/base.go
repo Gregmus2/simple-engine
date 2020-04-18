@@ -26,6 +26,10 @@ func (b *Base) Init() {
 
 }
 
+func (b *Base) PreUpdate() {
+
+}
+
 func (b *Base) Update() {
 
 }

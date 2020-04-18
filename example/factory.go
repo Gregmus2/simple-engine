@@ -5,9 +5,9 @@ import (
 )
 
 type ObjectFactory struct {
-	factory *objects.ObjectFactory
+	*objects.ObjectFactory
 }
 
 func NewObjectFactory(f *objects.ObjectFactory) *ObjectFactory {
-	return &ObjectFactory{factory: f}
+	return &ObjectFactory{ObjectFactory: f}
 }

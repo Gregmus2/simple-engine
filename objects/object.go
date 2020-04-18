@@ -7,13 +7,13 @@ import (
 )
 
 type ObjectFactory struct {
-	cfg       *common.Config
+	Cfg       *common.Config
 	Prog      *graphics.ProgramFactory
-	shape     *graphics.ShapeHelper
-	world     *box2d.B2World
-	converter *graphics.PercentToPosConverter
+	Shape     *graphics.ShapeHelper
+	World     *box2d.B2World
+	Converter *graphics.PercentToPosConverter
 }
 
 func NewObjectFactory(cfg *common.Config, p *graphics.ProgramFactory, s *graphics.ShapeHelper, w *box2d.B2World, c *graphics.PercentToPosConverter) *ObjectFactory {
-	return &ObjectFactory{cfg: cfg, Prog: p, shape: s, world: w, converter: c}
+	return &ObjectFactory{Cfg: cfg, Prog: p, Shape: s, World: w, Converter: c}
 }

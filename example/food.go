@@ -19,7 +19,7 @@ func (f *ObjectFactory) NewFood(x, y float64) *Food {
 		Color:   graphics.Yellow(),
 		Density: 1.0,
 	}
-	circle := f.factory.NewCircle(m)
+	circle := f.NewCircle(m)
 
 	return &Food{Circle: *circle}
 }

@@ -2,18 +2,22 @@ package main
 
 import (
 	"github.com/ByteArena/box2d"
+	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/Gregmus2/simple-engine/objects"
 	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/gregmus2/nnga"
 	"math"
 )
 
 type Agent struct {
 	circle *objects.Circle
 	prog   uint32
+	person *nnga.Person
+	cursor *common.Pos
 }
 
-func (f *ObjectFactory) NewAgent(x, y float64) *Agent {
+func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {
 	m := objects.CircleModel{
 		X:       x,
 		Y:       y,
@@ -22,11 +26,23 @@ func (f *ObjectFactory) NewAgent(x, y float64) *Agent {
 		Color:   graphics.Blue(),
 		Density: 1.0,
 	}
-	circle := f.factory.NewCircle(m)
+	circle := f.NewCircle(m)
 	circle.Body.SetFixedRotation(false)
+	circle.Body.SetLinearDamping(10.0)
 	white := graphics.White()
 
-	return &Agent{circle: circle, prog: f.factory.Prog.GetByColor(&white)}
+	angle := circle.Body.GetAngle()
+	pos := circle.Body.GetPosition()
+	x1, y1 := float32(pos.X)*f.Cfg.Graphics.Scale, float32(pos.Y)*f.Cfg.Graphics.Scale
+	x2 := x1 + (circle.Radius * float32(math.Cos(angle)))
+	y2 := y1 + (circle.Radius * float32(math.Sin(angle)))
+
+	return &Agent{
+		circle: circle,
+		prog:   f.Prog.GetByColor(&white),
+		person: p,
+		cursor: &common.Pos{X: x2, Y: y2},
+	}
 }
 
 func (a *Agent) Draw(scale float32) error {
@@ -36,12 +52,11 @@ func (a *Agent) Draw(scale float32) error {
 	}
 
 	angle := a.circle.Body.GetAngle()
-	degreeAngle := angle * 180 / math.Pi
 	pos := a.circle.Body.GetPosition()
 	x, y := float32(pos.X)*scale, float32(pos.Y)*scale
 	gl.UseProgram(a.prog)
-	x2 := x + (a.circle.Radius * float32(math.Cos(degreeAngle*graphics.DoublePI/360.0)))
-	y2 := y + (a.circle.Radius * float32(math.Sin(degreeAngle*graphics.DoublePI/360.0)))
+	x2 := x + (a.circle.Radius * float32(math.Cos(angle)))
+	y2 := y + (a.circle.Radius * float32(math.Sin(angle)))
 	a.circle.Shape.Line(x, y, x2, y2)
 
 	return nil

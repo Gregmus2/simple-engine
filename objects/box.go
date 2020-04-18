@@ -26,11 +26,11 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = model.T
 	bodyDef.FixedRotation = false
-	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.cfg.Physics.Scale, model.Y/m.cfg.Physics.Scale)
-	body := m.world.CreateBody(&bodyDef)
+	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.Cfg.Physics.Scale, model.Y/m.Cfg.Physics.Scale)
+	body := m.World.CreateBody(&bodyDef)
 
 	shape := box2d.MakeB2PolygonShape()
-	shape.SetAsBox(model.W/m.cfg.Physics.Scale/2, model.H/m.cfg.Physics.Scale/2)
+	shape.SetAsBox(model.W/m.Cfg.Physics.Scale/2, model.H/m.Cfg.Physics.Scale/2)
 
 	return &Box{
 		Body:    body,
@@ -38,7 +38,7 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 		w:       float32(model.W),
 		h:       float32(model.H),
 		prog:    m.Prog.GetByColor(&model.Color),
-		shape:   m.shape,
+		shape:   m.Shape,
 	}
 }
 

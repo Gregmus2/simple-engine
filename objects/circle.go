@@ -24,19 +24,19 @@ type Circle struct {
 
 func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 	bodyDef := box2d.MakeB2BodyDef()
-	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.cfg.Physics.Scale, model.Y/m.cfg.Physics.Scale)
+	bodyDef.Position = box2d.MakeB2Vec2(model.X/m.Cfg.Physics.Scale, model.Y/m.Cfg.Physics.Scale)
 	bodyDef.Type = model.T
-	body := m.world.CreateBody(&bodyDef)
+	body := m.World.CreateBody(&bodyDef)
 
 	shape := box2d.MakeB2CircleShape()
-	shape.SetRadius(float64(model.Radius) / m.cfg.Physics.Scale)
+	shape.SetRadius(float64(model.Radius) / m.Cfg.Physics.Scale)
 
 	return &Circle{
 		Radius:  model.Radius,
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
 		prog:    m.Prog.GetByColor(&model.Color),
-		Shape:   m.shape,
+		Shape:   m.Shape,
 	}
 }
 

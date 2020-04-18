@@ -57,6 +57,7 @@ func (app *App) Destroy() {
 }
 
 func (app *App) OnUpdate() {
+	app.scene.PreUpdate()
 	app.World.Step(timeStep, velocityIterations, positionIterations)
 	app.scene.Update()
 }
