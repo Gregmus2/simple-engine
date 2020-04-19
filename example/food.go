@@ -15,11 +15,12 @@ func (f *ObjectFactory) NewFood(x, y float64) *Food {
 		X:       x,
 		Y:       y,
 		Radius:  2,
-		T:       box2d.B2BodyType.B2_dynamicBody,
+		T:       box2d.B2BodyType.B2_staticBody,
 		Color:   graphics.Yellow(),
 		Density: 1.0,
 	}
 	circle := f.NewCircle(m)
+	circle.Fixture.SetUserData([]Tag{FoodTag})
 
 	return &Food{Circle: *circle}
 }

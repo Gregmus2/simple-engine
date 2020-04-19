@@ -34,6 +34,7 @@ func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world 
 
 func (app *App) SetScene(scene common.Scene) {
 	app.scene = scene
+	app.World.SetContactListener(scene)
 	scene.Init()
 	app.Window.SetKeyCallback(scene.Callback)
 }

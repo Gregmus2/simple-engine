@@ -19,18 +19,21 @@ type Agents struct {
 	agents  []*Agent
 	food    []*Food
 	ga      *nnga.GA
+
+	fixturesToMove []*box2d.B2Fixture
 }
 
 func NewAgents(base scenes.Base, f *ObjectFactory, con *graphics.PercentToPosConverter) *Agents {
 	return &Agents{
-		Base:    base,
-		factory: f,
-		con:     con,
+		Base:           base,
+		factory:        f,
+		con:            con,
+		fixturesToMove: make([]*box2d.B2Fixture, 0),
 	}
 }
 
 func (d *Agents) Init() {
-	time.Sleep(5 * time.Second)
+	//time.Sleep(5 * time.Second)
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
@@ -95,19 +98,36 @@ func (d *Agents) PreUpdate() {
 		c := math.Sqrt(math.Pow(targetPos.X-float64(agent.cursor.X), 2) + math.Pow(targetPos.Y-float64(agent.cursor.Y), 2))
 		angle := math.Acos((math.Pow(a, 2) + math.Pow(b, 2) - math.Pow(c, 2)) / (2 * a * b))
 		output := agent.person.Predict([]float64{math.Cos(angle), min})
-		dAngle, force := output[0], output[1]*0.1
+		dAngle, force := output[0], (output[1]-0.5)*0.1
 
 		newAngle := agent.circle.Body.GetAngle() + dAngle
 		xForce := force * math.Cos(newAngle)
 		yForce := force * math.Sin(newAngle)
 		agent.circle.Body.ApplyForceToCenter(box2d.MakeB2Vec2(xForce, yForce), true)
+
+		agent.targetPos = targetPos
+		agent.distance = min
 	}
 
-	// save targetPos and distance for calc score
+	for _, fixture := range d.fixturesToMove {
+		fixture.GetBody().SetTransform(box2d.MakeB2Vec2(float64(rand.Intn(d.Cfg.Window.W))/d.Cfg.Physics.Scale, float64(rand.Intn(d.Cfg.Window.H))/d.Cfg.Physics.Scale), 0)
+	}
+	if len(d.fixturesToMove) > 0 {
+		d.fixturesToMove = make([]*box2d.B2Fixture, 0)
+	}
 }
 
 func (d *Agents) Update() {
-	// calc score and evolve
+	for _, agent := range d.agents {
+		pos := agent.circle.Body.GetPosition()
+		distance := math.Sqrt(math.Pow(pos.X-agent.targetPos.X, 2) + math.Pow(pos.Y-agent.targetPos.Y, 2))
+		agent.person.Score(agent.distance - distance)
+	}
+
+	d.ga.Evolve()
+	for i, person := range d.ga.Persons {
+		d.agents[i].person = person
+	}
 }
 
 func (d *Agents) walls() {
@@ -130,4 +150,22 @@ func (d *Agents) walls() {
 
 	b.X = d.con.X(100)
 	d.DrawObjects = append(d.DrawObjects, d.factory.NewBox(b))
+}
+
+func (d *Agents) BeginContact(contact box2d.B2ContactInterface) {
+	d.handleContact(contact.GetFixtureA())
+	d.handleContact(contact.GetFixtureB())
+}
+
+func (d *Agents) handleContact(fixture *box2d.B2Fixture) {
+	userData := fixture.GetUserData()
+	switch userData.(type) {
+	case []Tag:
+		tags := userData.([]Tag)
+		for _, tag := range tags {
+			if tag == FoodTag {
+				d.fixturesToMove = append(d.fixturesToMove, fixture)
+			}
+		}
+	}
 }

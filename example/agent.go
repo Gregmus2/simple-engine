@@ -15,6 +15,9 @@ type Agent struct {
 	prog   uint32
 	person *nnga.Person
 	cursor *common.Pos
+
+	targetPos box2d.B2Vec2
+	distance  float64
 }
 
 func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {

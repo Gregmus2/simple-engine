@@ -43,3 +43,19 @@ func (b *Base) Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.
 		b.Window.SetShouldClose(true)
 	}
 }
+
+func (b *Base) BeginContact(contact box2d.B2ContactInterface) {
+
+}
+
+func (b *Base) EndContact(contact box2d.B2ContactInterface) {
+
+}
+
+func (b *Base) PreSolve(contact box2d.B2ContactInterface, oldManifold box2d.B2Manifold) {
+
+}
+
+func (b *Base) PostSolve(contact box2d.B2ContactInterface, impulse *box2d.B2ContactImpulse) {
+
+}
