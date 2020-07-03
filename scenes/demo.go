@@ -56,7 +56,7 @@ func (d *Demo) Init() {
 		circle := d.factory.NewCircle(c)
 		circle.Fixture.SetFriction(0.2)
 		circle.Fixture.SetRestitution(1.0)
-		d.DrawObjects = append(d.DrawObjects, circle)
+		d.DrawObjects.Put(circle)
 	}
 	for i := 0; i < 30; i++ {
 		c.X = d.con.X(50) - float64(i)
@@ -64,10 +64,10 @@ func (d *Demo) Init() {
 		circle := d.factory.NewCircle(c)
 		circle.Fixture.SetFriction(0.2)
 		circle.Fixture.SetRestitution(1.0)
-		d.DrawObjects = append(d.DrawObjects, circle)
+		d.DrawObjects.Put(circle)
 	}
 
-	d.DrawObjects = append(d.DrawObjects, box)
-	d.DrawObjects = append(d.DrawObjects, box2)
-	d.DrawObjects = append(d.DrawObjects, box3)
+	d.DrawObjects.Put(box)
+	d.DrawObjects.Put(box2)
+	d.DrawObjects.Put(box3)
 }
