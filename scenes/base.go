@@ -7,7 +7,7 @@ import (
 )
 
 type Base struct {
-	DrawObjects []common.Drawable
+	DrawObjects *common.DrawableCollection
 	World       *box2d.B2World
 	Cfg         *common.Config
 	Window      *glfw.Window
@@ -15,7 +15,7 @@ type Base struct {
 
 func NewBase(w *box2d.B2World, cfg *common.Config, win *glfw.Window) Base {
 	return Base{
-		DrawObjects: make([]common.Drawable, 0),
+		DrawObjects: common.NewDrawableCollection(),
 		World:       w,
 		Cfg:         cfg,
 		Window:      win,
@@ -34,7 +34,7 @@ func (b *Base) Update() {
 
 }
 
-func (b *Base) Drawable() []common.Drawable {
+func (b *Base) Drawable() *common.DrawableCollection {
 	return b.DrawObjects
 }
 

@@ -1,3 +1,7 @@
+### Requirements
+
+```libgl1-mesa-dev xorg-dev```
+
 ### Usage
 
 ```go
