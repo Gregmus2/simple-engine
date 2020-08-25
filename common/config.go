@@ -14,6 +14,7 @@ type Config struct {
 		Center *Pos
 	}
 	Physics struct {
+		Enable  bool
 		Scale   float64
 		Gravity struct {
 			X float64
@@ -38,6 +39,7 @@ func NewConfig() (*Config, error) {
 			H:     768,
 		},
 		Physics: struct {
+			Enable  bool
 			Scale   float64
 			Gravity struct {
 				X float64

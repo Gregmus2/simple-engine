@@ -21,7 +21,7 @@ func main() {
 	}
 
 	if err := c.Invoke(func(app *engine.App, agents *Agents) {
-		app.SetScene(agents)
+		app.InitWithScene(agents)
 		app.Loop()
 	}); err != nil {
 		logrus.Fatal(err)

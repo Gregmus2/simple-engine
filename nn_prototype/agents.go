@@ -67,13 +67,13 @@ func (d *Agents) Init() {
 
 	for i := 0; i < 50; i++ {
 		food := d.factory.NewFood(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)))
-		d.DrawObjects = append(d.DrawObjects, food)
+		d.DrawObjects.Put(food)
 		d.food = append(d.food, food)
 	}
 
 	for _, person := range d.ga.Persons {
 		agent := d.factory.NewAgent(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)), person)
-		d.DrawObjects = append(d.DrawObjects, agent)
+		d.DrawObjects.Put(agent)
 		d.agents = append(d.agents, agent)
 	}
 }
@@ -140,16 +140,16 @@ func (d *Agents) walls() {
 		Color:   graphics.White(),
 		Density: 0,
 	}
-	d.DrawObjects = append(d.DrawObjects, d.factory.NewBox(b))
+	d.DrawObjects.Put(d.factory.NewBox(b))
 
 	b.Y = d.con.Y(100)
-	d.DrawObjects = append(d.DrawObjects, d.factory.NewBox(b))
+	d.DrawObjects.Put(d.factory.NewBox(b))
 
 	b.X, b.Y, b.W, b.H = 0, d.con.Y(50), 1, d.con.Y(100)
-	d.DrawObjects = append(d.DrawObjects, d.factory.NewBox(b))
+	d.DrawObjects.Put(d.factory.NewBox(b))
 
 	b.X = d.con.X(100)
-	d.DrawObjects = append(d.DrawObjects, d.factory.NewBox(b))
+	d.DrawObjects.Put(d.factory.NewBox(b))
 }
 
 func (d *Agents) BeginContact(contact box2d.B2ContactInterface) {

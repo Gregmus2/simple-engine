@@ -3,6 +3,7 @@ window:
   h: 600
   title: test
 physics:
+  enable: true
   scale: 100
   gravity:
     x: 0.0

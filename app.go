@@ -14,9 +14,11 @@ type App struct {
 	World  *box2d.B2World
 	GL     *graphics.OpenGL
 
-	scale float32
-	scene common.Scene
-	quit  bool
+	cfg           *common.Config
+	updateActions []func()
+	scale         float32
+	scene         common.Scene
+	quit          bool
 }
 
 const velocityIterations = 8
@@ -29,17 +31,34 @@ func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world 
 		GL:     gl,
 		World:  world,
 		scale:  cfg.Graphics.Scale,
+		cfg:    cfg,
 	}, nil
 }
 
-func (app *App) SetScene(scene common.Scene) {
+func (app *App) InitWithScene(scene common.Scene) {
 	app.scene = scene
 	app.World.SetContactListener(scene)
 	scene.Init()
-	app.Window.SetKeyCallback(scene.Callback)
+	app.initCallbacks()
+}
+
+func (app *App) initCallbacks() {
+	app.Window.SetKeyCallback(app.scene.Callback)
+	app.updateActions = make([]func(), 0)
+	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
+	if app.cfg.Physics.Enable {
+		app.updateActions = append(app.updateActions, func() {
+			app.World.Step(timeStep, velocityIterations, positionIterations)
+		})
+	}
+	app.updateActions = append(app.updateActions, app.scene.Update)
 }
 
 func (app *App) Loop() {
+	if app.scene == nil {
+		panic("scene isn't set")
+	}
+
 	for !app.Window.ShouldClose() {
 		app.OnUpdate()
 		app.OnRender()
@@ -58,9 +77,9 @@ func (app *App) Destroy() {
 }
 
 func (app *App) OnUpdate() {
-	app.scene.PreUpdate()
-	app.World.Step(timeStep, velocityIterations, positionIterations)
-	app.scene.Update()
+	for _, action := range app.updateActions {
+		action()
+	}
 }
 
 func (app *App) OnRender() {
