@@ -35,7 +35,7 @@ func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 		Radius:  model.Radius,
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
-		prog:    m.Prog.GetByColor(&model.Color),
+		prog:    m.Prog.GetByColor(model.Color),
 		Shape:   m.Shape,
 	}
 }

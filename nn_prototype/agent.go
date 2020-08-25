@@ -42,7 +42,7 @@ func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {
 
 	return &Agent{
 		circle: circle,
-		prog:   f.Prog.GetByColor(&white),
+		prog:   f.Prog.GetByColor(white),
 		person: p,
 		cursor: &common.Pos{X: x2, Y: y2},
 	}

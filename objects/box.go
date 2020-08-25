@@ -37,7 +37,7 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 		Fixture: body.CreateFixture(&shape, model.Density),
 		w:       float32(model.W),
 		h:       float32(model.H),
-		prog:    m.Prog.GetByColor(&model.Color),
+		prog:    m.Prog.GetByColor(model.Color),
 		shape:   m.Shape,
 	}
 }

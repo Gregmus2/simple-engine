@@ -31,7 +31,7 @@ func NewProgramFactory() *ProgramFactory {
 	return &ProgramFactory{programs: make(map[string]uint32)}
 }
 
-func (c *ProgramFactory) GetByColor(color *Color) uint32 {
+func (c *ProgramFactory) GetByColor(color Color) uint32 {
 	prog, exists := c.programs[c.hash(color)]
 	if exists {
 		return prog
@@ -43,11 +43,11 @@ func (c *ProgramFactory) GetByColor(color *Color) uint32 {
 	return prog
 }
 
-func (c *ProgramFactory) hash(color *Color) string {
+func (c *ProgramFactory) hash(color Color) string {
 	return fmt.Sprintf("%f %f %f %f", color.A, color.R, color.G, color.B)
 }
 
-func (c *ProgramFactory) buildProgram(color *Color) uint32 {
+func (c *ProgramFactory) buildProgram(color Color) uint32 {
 	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
