@@ -5,7 +5,7 @@ import (
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/Gregmus2/simple-engine/objects"
-	"github.com/go-gl/gl/v4.5-core/gl"
+	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/gregmus2/nnga"
 	"math"
 )

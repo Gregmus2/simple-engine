@@ -1,6 +1,6 @@
 module github.com/Gregmus2/simple-engine
 
-go 1.13
+go 1.14
 
 require (
 	github.com/ByteArena/box2d v1.0.2
