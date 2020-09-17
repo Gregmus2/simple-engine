@@ -27,6 +27,7 @@ const fragmentShaderTemplate string = `
     }
 ` + "\x00"
 
+// todo need to compile all colors at the beginning
 func NewProgramFactory() *ProgramFactory {
 	return &ProgramFactory{programs: make(map[string]uint32)}
 }
