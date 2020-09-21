@@ -9,7 +9,7 @@ import (
 	"go.uber.org/dig"
 )
 
-func BuildContainer(cfgFile string) (*dig.Container, error) {
+func BuildContainer() (*dig.Container, error) {
 	c := dig.New()
 
 	if err := c.Provide(common.NewConfig); err != nil {

@@ -66,6 +66,6 @@ func (f *ShapeHelper) Line(x1, y1, x2, y2 float32) {
 
 	vao := MakeVAO(vertexes)
 	gl.BindVertexArray(vao)
-	gl.LineWidth(5)
+	gl.LineWidth(1.0)
 	gl.DrawArrays(gl.LINES, 0, 2)
 }

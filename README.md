@@ -1,6 +1,6 @@
 ### Requirements
 
-```libgl1-mesa-dev xorg-dev```
+```build-essential libgl1-mesa-dev xorg-dev```
 
 ### Usage
 

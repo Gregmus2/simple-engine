@@ -1,14 +1,16 @@
 package graphics
 
 import (
+	"github.com/Gregmus2/simple-engine/common"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/pkg/errors"
 	"log"
+	"unsafe"
 )
 
 type OpenGL struct{}
 
-func NewOpenGL() (*OpenGL, error) {
+func NewOpenGL(cfg *common.Config) (*OpenGL, error) {
 	if err := gl.Init(); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize openGL")
 	}
@@ -16,6 +18,23 @@ func NewOpenGL() (*OpenGL, error) {
 	log.Println("OpenGL version", version)
 
 	gl.Enable(gl.MULTISAMPLE)
+
+	if cfg.Graphics.Debug {
+		gl.Enable(gl.DEBUG_OUTPUT)
+		gl.Enable(gl.DEBUG_OUTPUT_SYNCHRONOUS)
+		debugMessage := func(
+			source uint32,
+			gltype uint32,
+			id uint32,
+			severity uint32,
+			length int32,
+			message string,
+			userParam unsafe.Pointer) {
+			log.Println(source, "|", gltype, "|", severity, "|", message, "|", userParam)
+		}
+		gl.DebugMessageCallback(debugMessage, nil)
+		gl.DebugMessageControl(gl.DONT_CARE, gl.DONT_CARE, gl.DONT_CARE, 0, nil, true)
+	}
 
 	return &OpenGL{}, nil
 }

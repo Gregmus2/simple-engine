@@ -10,3 +10,4 @@ physics:
     y: -8.0
 graphics:
   scale: 100
+  debug: false

@@ -57,9 +57,9 @@ func (a *Agent) Draw(scale float32) error {
 	angle := a.circle.Body.GetAngle()
 	pos := a.circle.Body.GetPosition()
 	x, y := float32(pos.X)*scale, float32(pos.Y)*scale
-	gl.UseProgram(a.prog)
 	x2 := x + (a.circle.Radius * float32(math.Cos(angle)))
 	y2 := y + (a.circle.Radius * float32(math.Sin(angle)))
+	gl.UseProgram(a.prog)
 	a.circle.Shape.Line(x, y, x2, y2)
 
 	return nil

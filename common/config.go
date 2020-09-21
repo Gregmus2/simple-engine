@@ -23,6 +23,7 @@ type Config struct {
 	}
 	Graphics struct {
 		Scale float32
+		Debug bool
 	}
 }
 
@@ -57,6 +58,7 @@ func NewConfig() (*Config, error) {
 		},
 		Graphics: struct {
 			Scale float32
+			Debug bool
 		}{Scale: 100},
 	}
 
