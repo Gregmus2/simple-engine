@@ -17,9 +17,10 @@ func NewShapeFactory(h *PosToUnitsConverter) *ShapeHelper {
 
 func (f *ShapeHelper) Box(x, y, w, h float32) {
 	square := f.boxVertexes(x, y, w, h)
-	vao := MakeVAO(square)
-	gl.BindVertexArray(vao)
+	vbo := MakeVBO(square)
+	vao := MakeVAO(vbo)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
+	ClearBuffers(vbo, vao)
 }
 
 func (f *ShapeHelper) boxVertexes(x, y, w, h float32) []float32 {
@@ -38,9 +39,10 @@ func (f *ShapeHelper) boxVertexes(x, y, w, h float32) []float32 {
 
 func (f *ShapeHelper) Circle(x, y, r float32) {
 	circle := f.circleVertexes(x, y, r, 360)
-	vao := MakeVAO(circle)
-	gl.BindVertexArray(vao)
+	vbo := MakeVBO(circle)
+	vao := MakeVAO(vbo)
 	gl.DrawArrays(gl.TRIANGLE_FAN, 0, int32(len(circle)/3))
+	ClearBuffers(vbo, vao)
 }
 
 func (f *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
@@ -64,8 +66,9 @@ func (f *ShapeHelper) Line(x1, y1, x2, y2 float32) {
 
 	//gl.Enable(gl.LINE_SMOOTH)
 
-	vao := MakeVAO(vertexes)
-	gl.BindVertexArray(vao)
+	vbo := MakeVBO(vertexes)
+	vao := MakeVAO(vbo)
 	gl.LineWidth(1.0)
 	gl.DrawArrays(gl.LINES, 0, 2)
+	ClearBuffers(vbo, vao)
 }

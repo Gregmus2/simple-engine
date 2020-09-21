@@ -44,6 +44,7 @@ func (o *Circle) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
 	gl.UseProgram(o.prog)
 	o.Shape.Circle(float32(pos.X)*scale, float32(pos.Y)*scale, o.Radius)
+	gl.UseProgram(0)
 
 	return nil
 }

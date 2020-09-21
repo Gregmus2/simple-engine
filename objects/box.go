@@ -46,6 +46,7 @@ func (o *Box) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
 	gl.UseProgram(o.prog)
 	o.shape.Box(float32(pos.X)*scale-o.w/2, float32(pos.Y)*scale+o.h/2, o.w, o.h)
+	gl.UseProgram(0)
 
 	return nil
 }

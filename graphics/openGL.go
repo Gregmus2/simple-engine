@@ -34,24 +34,34 @@ func NewOpenGL(cfg *common.Config) (*OpenGL, error) {
 		}
 		gl.DebugMessageCallback(debugMessage, nil)
 		gl.DebugMessageControl(gl.DONT_CARE, gl.DONT_CARE, gl.DONT_CARE, 0, nil, true)
+		// todo print GPU memory
 	}
 
 	return &OpenGL{}, nil
 }
 
-// Vertex Array Object
-func MakeVAO(points []float32) uint32 {
+func MakeVBO(points []float32) *uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
 
+	return &vbo
+}
+
+func MakeVAO(vbo *uint32) *uint32 {
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
 
-	return vao
+	return &vao
+}
+
+func ClearBuffers(vbo, vao *uint32) {
+	gl.DisableVertexAttribArray(0)
+	gl.DeleteBuffers(1, vbo)
+	gl.DeleteVertexArrays(1, vao)
 }

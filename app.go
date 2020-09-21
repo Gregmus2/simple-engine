@@ -85,14 +85,12 @@ func (app *App) OnUpdate() {
 func (app *App) OnRender() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-	app.scene.Drawable().RLock()
 	for d := range app.scene.Drawable().Elements {
 		err := d.Draw(app.scale)
 		if err != nil {
 			logrus.WithError(err).Fatal("draw error")
 		}
 	}
-	app.scene.Drawable().RUnlock()
 
 	glfw.PollEvents()
 	app.Window.SwapBuffers()
