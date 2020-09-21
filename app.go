@@ -95,3 +95,7 @@ func (app *App) OnRender() {
 	glfw.PollEvents()
 	app.Window.SwapBuffers()
 }
+
+func (app *App) Shutdown() {
+	app.quit = true
+}
