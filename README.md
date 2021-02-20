@@ -1,3 +1,9 @@
+Engine to create small simulations.
+
+It is providing 
+* Graphics (opengl-v4.6 + glfw-v3.3) https://github.com/go-gl/gl
+* Physics (box2d) https://github.com/ByteArena/box2d
+
 ![](example.gif)
 
 ### Requirements
