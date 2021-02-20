@@ -1,8 +1,12 @@
+![](example.gif)
+
 ### Requirements
 
 ```build-essential libgl1-mesa-dev xorg-dev```
 
 ### Usage
+
+Run only with `go run .` It won't work correctly with IDE runner
 
 ```go
 func main() {
