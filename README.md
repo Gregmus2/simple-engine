@@ -55,5 +55,6 @@ func buildContainer(c *dig.Container) error {
 * You should implement Scene interface to replace scenes.Demo scene.
 You can use `scenes.Base` as embedded structure
 * You can use `objects.ObjectFactory` structure as embedded in your factory to create new objects.
+* Also you need to implement `common.Init` interface, at least with empty content
 
 You should look into `example` directory to figure it out better 

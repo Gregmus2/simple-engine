@@ -37,5 +37,9 @@ func buildContainer(c *dig.Container) error {
 		return err
 	}
 
+	if err := c.Provide(NewInit); err != nil {
+		return err
+	}
+
 	return nil
 }

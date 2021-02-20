@@ -10,7 +10,7 @@ import (
 
 type OpenGL struct{}
 
-func NewOpenGL(cfg *common.Config) (*OpenGL, error) {
+func NewOpenGL(cfg *common.Config, init common.Init) (*OpenGL, error) {
 	if err := gl.Init(); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize openGL")
 	}
@@ -18,6 +18,11 @@ func NewOpenGL(cfg *common.Config) (*OpenGL, error) {
 	log.Println("OpenGL version", version)
 
 	gl.Enable(gl.MULTISAMPLE)
+
+	err := init.OpenGL()
+	if err != nil {
+		return nil, err
+	}
 
 	if cfg.Graphics.Debug {
 		gl.Enable(gl.DEBUG_OUTPUT)
