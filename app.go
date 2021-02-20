@@ -23,7 +23,7 @@ type App struct {
 
 const velocityIterations = 8
 const positionIterations = 2
-const timeStep = 1.0 / 60
+const timeStep = 1.0 / 40
 
 func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World) (*App, error) {
 	return &App{
