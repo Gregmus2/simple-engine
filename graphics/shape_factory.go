@@ -15,10 +15,18 @@ func NewShapeFactory(h *PosToUnitsConverter) *ShapeHelper {
 	return &ShapeHelper{helper: h}
 }
 
-func (s *ShapeHelper) Box(w, h, d float32, vert *uint32) (*uint32, *uint32) {
+func (s *ShapeHelper) Box(w, h, d float32) (*uint32, *uint32) {
 	box := s.boxVertexes(w, h, d)
 	vbo := MakeVBO(box)
-	vao := MakeVAO(vert)
+	vao := MakeVAO(false)
+
+	return vbo, vao
+}
+
+func (s *ShapeHelper) LightBox(w, h, d float32) (*uint32, *uint32) {
+	box := s.boxVertexes(w, h, d)
+	vbo := MakeVBO(box)
+	vao := MakeVAO(true)
 
 	return vbo, vao
 }
@@ -32,54 +40,54 @@ func (s *ShapeHelper) boxVertexes(w, h, d float32) []float32 {
 	l, r, t, b, n, f := -hW, hW, hH, -hH, hD, -hD
 
 	return []float32{
-		l, t, f, 0, 0,
-		r, t, f, 1, 0,
-		r, b, f, 1, 1,
-		r, b, f, 1, 1,
-		l, b, f, 0, 1,
-		l, t, f, 0, 0,
+		l, t, f, 0, 0, -1,
+		r, t, f, 0, 0, -1,
+		r, b, f, 0, 0, -1,
+		r, b, f, 0, 0, -1,
+		l, b, f, 0, 0, -1,
+		l, t, f, 0, 0, -1,
 
-		l, t, n, 0, 0,
-		r, t, n, 1, 0,
-		r, b, n, 1, 1,
-		r, b, n, 1, 1,
-		l, b, n, 0, 1,
-		l, t, n, 0, 0,
+		l, t, n, 0, 0, 1,
+		r, t, n, 0, 0, 1,
+		r, b, n, 0, 0, 1,
+		r, b, n, 0, 0, 1,
+		l, b, n, 0, 0, 1,
+		l, t, n, 0, 0, 1,
 
-		r, b, n, 1, 0,
-		r, b, f, 1, 1,
-		r, t, f, 0, 1,
-		r, t, f, 0, 1,
-		r, t, n, 0, 0,
-		r, b, n, 1, 0,
+		l, b, n, -1, 0, 0,
+		l, b, f, -1, 0, 0,
+		l, t, f, -1, 0, 0,
+		l, t, f, -1, 0, 0,
+		l, t, n, -1, 0, 0,
+		l, b, n, -1, 0, 0,
 
-		l, b, n, 1, 0,
-		l, b, f, 1, 1,
-		l, t, f, 0, 1,
-		l, t, f, 0, 1,
-		l, t, n, 0, 0,
-		l, b, n, 1, 0,
+		r, b, n, 1, 0, 0,
+		r, b, f, 1, 0, 0,
+		r, t, f, 1, 0, 0,
+		r, t, f, 1, 0, 0,
+		r, t, n, 1, 0, 0,
+		r, b, n, 1, 0, 0,
 
-		l, t, f, 0, 1,
-		r, t, f, 1, 1,
-		r, t, n, 1, 0,
-		r, t, n, 1, 0,
-		l, t, n, 0, 0,
-		l, t, f, 0, 1,
+		l, t, f, 0, -1, 0,
+		r, t, f, 0, -1, 0,
+		r, t, n, 0, -1, 0,
+		r, t, n, 0, -1, 0,
+		l, t, n, 0, -1, 0,
+		l, t, f, 0, -1, 0,
 
-		l, b, f, 0, 1,
-		r, b, f, 1, 1,
-		r, b, n, 1, 0,
-		r, b, n, 1, 0,
-		l, b, n, 0, 0,
-		l, b, f, 0, 1,
+		l, b, f, 0, 1, 0,
+		r, b, f, 0, 1, 0,
+		r, b, n, 0, 1, 0,
+		r, b, n, 0, 1, 0,
+		l, b, n, 0, 1, 0,
+		l, b, f, 0, 1, 0,
 	}
 }
 
 func (s *ShapeHelper) Circle(x, y, r float32) {
 	circle := s.circleVertexes(x, y, r, 360)
 	vbo := MakeVBO(circle)
-	vao := MakeVAO(vbo)
+	vao := MakeVAO(false)
 	gl.DrawArrays(gl.TRIANGLE_FAN, 0, int32(len(circle)/3))
 	ClearBuffers(vbo, vao)
 }
@@ -106,7 +114,7 @@ func (s *ShapeHelper) Line(x1, y1, x2, y2 float32) {
 	//gl.Enable(gl.LINE_SMOOTH)
 
 	vbo := MakeVBO(vertexes)
-	vao := MakeVAO(vbo)
+	vao := MakeVAO(false)
 	gl.LineWidth(1.0)
 	gl.DrawArrays(gl.LINES, 0, 2)
 	ClearBuffers(vbo, vao)

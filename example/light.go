@@ -34,9 +34,22 @@ func (l *Light) Init() {
 	}
 	l.DrawObjects.Put(l.factory.NewBox(floor))
 
+	light := l.factory.NewLightBox(objects.BoxModel{
+		X:       l.con.X(60),
+		Y:       l.con.Y(60),
+		Z:       -0.2,
+		W:       l.con.W(5),
+		H:       l.con.H(5),
+		D:       l.con.D(5),
+		T:       box2d.B2BodyType.B2_staticBody,
+		Color:   graphics.White(),
+		Density: 0,
+	})
+	l.DrawObjects.Put(light)
+
 	box := l.factory.NewBox(objects.BoxModel{
 		X:       l.con.X(50),
-		Y:       l.con.Y(80),
+		Y:       l.con.Y(60),
 		W:       l.con.W(5),
 		H:       l.con.H(5),
 		D:       l.con.D(5),

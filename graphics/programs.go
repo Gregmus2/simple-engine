@@ -9,9 +9,10 @@ import (
 
 type Programs struct {
 	SimpleColor uint32
+	Light       uint32
 }
 
-const vertexShaderSource string = `
+const lightVertexShader string = `
     #version 410
 	layout (location = 0) in vec3 vert;
     uniform mat4 model;
@@ -22,32 +23,90 @@ const vertexShaderSource string = `
     }
 ` + "\x00"
 
-const fragmentShaderTemplate string = `
+const lightFragmentShader string = `
     #version 410
-	out vec4 frag_colour;
-    uniform vec3 objectColor;
+	out vec4 FragColor;
+	
+	void main()
+	{
+		FragColor = vec4(1.0); // set alle 4 vector values to 1.0
+	}
+` + "\x00"
+
+const vertexShader string = `
+    #version 410
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec3 aNormal;
+	
+	out vec3 FragPos;
+	out vec3 Normal;
+	
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
+	
+	void main()
+	{
+		FragPos = vec3(model * vec4(aPos, 1.0));
+		Normal = mat3(transpose(inverse(model))) * aNormal;  
+		
+		gl_Position = projection * view * vec4(FragPos, 1.0);
+	}
+` + "\x00"
+
+const fragmentShader string = `
+    #version 410
+	out vec4 FragColor;
+
+	in vec3 Normal;  
+	in vec3 FragPos;  
+	  
+	uniform vec3 lightPos; 
+	uniform vec3 viewPos; 
 	uniform vec3 lightColor;
-    void main() {
-        frag_colour = vec4(objectColor * lightColor, 1.0);
-    }
+	uniform vec3 objectColor;
+	
+	void main()
+	{
+		// ambient
+		float ambientStrength = 0.1;
+		vec3 ambient = ambientStrength * lightColor;
+		
+		// diffuse 
+		vec3 norm = normalize(Normal);
+		vec3 lightDir = normalize(lightPos - FragPos);
+		float diff = max(dot(norm, lightDir), 0.0);
+		vec3 diffuse = diff * lightColor;
+		
+		// specular
+		float specularStrength = 0.5;
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec3 reflectDir = reflect(-lightDir, norm);  
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+		vec3 specular = specularStrength * spec * lightColor;  
+			
+		vec3 result = (ambient + diffuse + specular) * objectColor;
+		FragColor = vec4(result, 1.0);
+	} 
 ` + "\x00"
 
 // todo need to compile all colors at the beginning
 func NewPrograms() *Programs {
 	p := &Programs{}
-	p.SimpleColor = p.buildProgram()
+	p.SimpleColor = p.buildProgram(vertexShader, fragmentShader)
+	p.Light = p.buildProgram(lightVertexShader, lightFragmentShader)
 
 	return p
 }
 
-func (c *Programs) buildProgram() uint32 {
-	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+func (c *Programs) buildProgram(vertex, fragment string) uint32 {
+	vertexShader, err := c.compileShader(vertex, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return 0
 	}
 
-	fragmentShader, err := c.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
+	fragmentShader, err := c.compileShader(fragment, gl.FRAGMENT_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return 0

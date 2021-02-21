@@ -7,24 +7,17 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-type BoxModel struct {
-	X, Y, Z, W, H, D float64
-	T                uint8
-	Color            graphics.Color
-	Density          float64
+type LightBox struct {
+	Body       *box2d.B2Body
+	Fixture    *box2d.B2Fixture
+	w, h, d, z float32
+	vbo, vao   *uint32
+	prog       uint32
+	shape      *graphics.ShapeHelper
+	color      graphics.Color
 }
 
-type Box struct {
-	Body     *box2d.B2Body
-	Fixture  *box2d.B2Fixture
-	w, h, d  float32
-	vbo, vao *uint32
-	prog     uint32
-	shape    *graphics.ShapeHelper
-	color    graphics.Color
-}
-
-func (m *ObjectFactory) NewBox(model BoxModel) *Box {
+func (m *ObjectFactory) NewLightBox(model BoxModel) *LightBox {
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = model.T
 	bodyDef.FixedRotation = false
@@ -34,15 +27,16 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 	shape := box2d.MakeB2PolygonShape()
 	shape.SetAsBox(model.W/m.Cfg.Physics.Scale/2, model.H/m.Cfg.Physics.Scale/2)
 
-	program := m.Prog.SimpleColor
-	vbo, vao := m.Shape.Box(float32(model.W), float32(model.H), float32(model.D))
+	program := m.Prog.Light
+	vbo, vao := m.Shape.LightBox(float32(model.W), float32(model.H), float32(model.D))
 
-	return &Box{
+	return &LightBox{
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
 		w:       float32(model.W),
 		h:       float32(model.H),
 		d:       float32(model.D),
+		z:       float32(model.Z),
 		vbo:     vbo,
 		vao:     vao,
 		prog:    program,
@@ -51,12 +45,9 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 	}
 }
 
-func (o *Box) Draw(scale float32) error {
+func (o *LightBox) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
 	gl.UseProgram(o.prog)
-
-	// todo add lights to recognize sides
-	// todo refactoring
 
 	// near -> 3
 	//projection := mgl32.Ortho(-1, 1, -1, 1, 0.1, 100)
@@ -69,15 +60,11 @@ func (o *Box) Draw(scale float32) error {
 	gl.UniformMatrix4fv(cameraUniform, 1, false, &camera[0])
 
 	x, y := float32(pos.X)*scale, float32(pos.Y)*scale
-	model := mgl32.Translate3D(x/600, y/300, 0)
+	println(x/600, y/300)
+	model := mgl32.Translate3D(x/600, y/300, o.z).Mul4(mgl32.Scale3D(0.2, 0.2, 0.2))
 	//model := mgl32.Ident4()
 	modelUniform := gl.GetUniformLocation(o.prog, gl.Str("model\x00"))
 	gl.UniformMatrix4fv(modelUniform, 1, false, &model[0])
-
-	gl.Uniform3f(gl.GetUniformLocation(o.prog, gl.Str("objectColor\x00")), o.color.R, o.color.G, o.color.B)
-	gl.Uniform3f(gl.GetUniformLocation(o.prog, gl.Str("lightColor\x00")), 1, 1, 1)
-	gl.Uniform3f(gl.GetUniformLocation(o.prog, gl.Str("lightPos\x00")), 0.2, 0.2, -0.1)
-	gl.Uniform3f(gl.GetUniformLocation(o.prog, gl.Str("viewPos\x00")), 1, 1, 1)
 
 	gl.BindVertexArray(*o.vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, 36)
@@ -87,7 +74,7 @@ func (o *Box) Draw(scale float32) error {
 	return nil
 }
 
-func (o *Box) Die() error {
+func (o *LightBox) Die() error {
 	graphics.ClearBuffers(o.vbo, o.vao)
 
 	return nil

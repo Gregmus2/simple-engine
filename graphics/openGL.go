@@ -56,16 +56,17 @@ func MakeVBO(points []float32) *uint32 {
 	return &vbo
 }
 
-func MakeVAO(vert *uint32) *uint32 {
+func MakeVAO(light bool) *uint32 {
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
-	//gl.EnableVertexAttribArray(0)
-	//gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
-	//gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 4*5, nil)
 
-	gl.EnableVertexAttribArray(*vert)
-	gl.VertexAttribPointer(*vert, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 6*4, gl.PtrOffset(0))
+	gl.EnableVertexAttribArray(0)
+	if !light {
+		gl.VertexAttribPointer(1, 3, gl.FLOAT, false, 6*4, gl.PtrOffset(3*4))
+		gl.EnableVertexAttribArray(1)
+	}
 
 	return &vao
 }
