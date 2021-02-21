@@ -7,6 +7,7 @@ import (
 
 type Drawable interface {
 	Draw(scale float32) error
+	Die() error
 }
 
 type Scene interface {

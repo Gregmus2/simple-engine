@@ -15,38 +15,77 @@ func NewShapeFactory(h *PosToUnitsConverter) *ShapeHelper {
 	return &ShapeHelper{helper: h}
 }
 
-func (f *ShapeHelper) Box(x, y, w, h float32) {
-	square := f.boxVertexes(x, y, w, h)
-	vbo := MakeVBO(square)
-	vao := MakeVAO(vbo)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square)/3))
-	ClearBuffers(vbo, vao)
+func (s *ShapeHelper) Box(w, h, d float32, vert *uint32) (*uint32, *uint32) {
+	box := s.boxVertexes(w, h, d)
+	vbo := MakeVBO(box)
+	vao := MakeVAO(vert)
+
+	return vbo, vao
 }
 
-func (f *ShapeHelper) boxVertexes(x, y, w, h float32) []float32 {
-	x, y, w, h = f.helper.X(x), f.helper.Y(y), f.helper.W(w), f.helper.H(h)
+func (s *ShapeHelper) boxVertexes(w, h, d float32) []float32 {
+	// width, height, depth
+	w, h, d = s.helper.W(w), s.helper.H(h), s.helper.D(d)
+	// half width, half height, half depth
+	hW, hH, hD := w/2, h/2, d/2
+	// left, right, top, bottom, near, far
+	l, r, t, b, n, f := -hW, hW, hH, -hH, hD, -hD
 
 	return []float32{
-		x, y, 0,
-		x + w, y, 0,
-		x, y - h, 0,
+		l, t, f, 0, 0,
+		r, t, f, 1, 0,
+		r, b, f, 1, 1,
+		r, b, f, 1, 1,
+		l, b, f, 0, 1,
+		l, t, f, 0, 0,
 
-		x, y - h, 0,
-		x + w, y, 0,
-		x + w, y - h, 0,
+		l, t, n, 0, 0,
+		r, t, n, 1, 0,
+		r, b, n, 1, 1,
+		r, b, n, 1, 1,
+		l, b, n, 0, 1,
+		l, t, n, 0, 0,
+
+		r, b, n, 1, 0,
+		r, b, f, 1, 1,
+		r, t, f, 0, 1,
+		r, t, f, 0, 1,
+		r, t, n, 0, 0,
+		r, b, n, 1, 0,
+
+		l, b, n, 1, 0,
+		l, b, f, 1, 1,
+		l, t, f, 0, 1,
+		l, t, f, 0, 1,
+		l, t, n, 0, 0,
+		l, b, n, 1, 0,
+
+		l, t, f, 0, 1,
+		r, t, f, 1, 1,
+		r, t, n, 1, 0,
+		r, t, n, 1, 0,
+		l, t, n, 0, 0,
+		l, t, f, 0, 1,
+
+		l, b, f, 0, 1,
+		r, b, f, 1, 1,
+		r, b, n, 1, 0,
+		r, b, n, 1, 0,
+		l, b, n, 0, 0,
+		l, b, f, 0, 1,
 	}
 }
 
-func (f *ShapeHelper) Circle(x, y, r float32) {
-	circle := f.circleVertexes(x, y, r, 360)
+func (s *ShapeHelper) Circle(x, y, r float32) {
+	circle := s.circleVertexes(x, y, r, 360)
 	vbo := MakeVBO(circle)
 	vao := MakeVAO(vbo)
 	gl.DrawArrays(gl.TRIANGLE_FAN, 0, int32(len(circle)/3))
 	ClearBuffers(vbo, vao)
 }
 
-func (f *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
-	x, y, rW, rH := f.helper.X(x), f.helper.Y(y), f.helper.W(r), f.helper.H(r)
+func (s *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
+	x, y, rW, rH := s.helper.X(x), s.helper.Y(y), s.helper.W(r), s.helper.H(r)
 
 	vertexes := make([]float32, (sides+2)*3)
 	for i := 0; i < (sides+2)*3; i += 3 {
@@ -58,10 +97,10 @@ func (f *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
 	return vertexes
 }
 
-func (f *ShapeHelper) Line(x1, y1, x2, y2 float32) {
+func (s *ShapeHelper) Line(x1, y1, x2, y2 float32) {
 	vertexes := []float32{
-		f.helper.X(x1), f.helper.Y(y1), 0,
-		f.helper.X(x2), f.helper.Y(y2), 0,
+		s.helper.X(x1), s.helper.Y(y1), 0,
+		s.helper.X(x2), s.helper.Y(y2), 0,
 	}
 
 	//gl.Enable(gl.LINE_SMOOTH)

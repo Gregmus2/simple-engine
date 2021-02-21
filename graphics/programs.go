@@ -7,56 +7,47 @@ import (
 	"strings"
 )
 
-type ProgramFactory struct {
-	programs map[string]uint32
+type Programs struct {
+	SimpleColor uint32
 }
 
 const vertexShaderSource string = `
     #version 410
-    in vec3 vp;
+	layout (location = 0) in vec3 vert;
+    uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
     void main() {
-        gl_Position = vec4(vp, 1.0);
+        gl_Position = projection * view * model * vec4(vert, 1.0);
     }
 ` + "\x00"
 
 const fragmentShaderTemplate string = `
     #version 410
-    out vec4 frag_colour;
+	out vec4 frag_colour;
+    uniform vec3 objectColor;
+	uniform vec3 lightColor;
     void main() {
-        frag_colour = vec4(%f, %f, %f, %f);
+        frag_colour = vec4(objectColor * lightColor, 1.0);
     }
 ` + "\x00"
 
 // todo need to compile all colors at the beginning
-func NewProgramFactory() *ProgramFactory {
-	return &ProgramFactory{programs: make(map[string]uint32)}
+func NewPrograms() *Programs {
+	p := &Programs{}
+	p.SimpleColor = p.buildProgram()
+
+	return p
 }
 
-func (c *ProgramFactory) GetByColor(color Color) uint32 {
-	prog, exists := c.programs[c.hash(color)]
-	if exists {
-		return prog
-	}
-
-	prog = c.buildProgram(color)
-	c.programs[c.hash(color)] = prog
-
-	return prog
-}
-
-func (c *ProgramFactory) hash(color Color) string {
-	return fmt.Sprintf("%f %f %f %f", color.A, color.R, color.G, color.B)
-}
-
-func (c *ProgramFactory) buildProgram(color Color) uint32 {
+func (c *Programs) buildProgram() uint32 {
 	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return 0
 	}
 
-	fragmentShaderSource := fmt.Sprintf(fragmentShaderTemplate, color.R, color.G, color.B, color.A)
-	fragmentShader, err := c.compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	fragmentShader, err := c.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return 0
@@ -72,7 +63,7 @@ func (c *ProgramFactory) buildProgram(color Color) uint32 {
 	return prog
 }
 
-func (c *ProgramFactory) compileShader(source string, shaderType uint32) (uint32, error) {
+func (c *Programs) compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
 	csources, free := gl.Strs(source)

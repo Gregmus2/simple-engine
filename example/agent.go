@@ -15,6 +15,7 @@ type Agent struct {
 	prog   uint32
 	person *nnga.Person
 	cursor *common.Pos
+	color  graphics.Color
 
 	targetPos box2d.B2Vec2
 	distance  float64
@@ -42,9 +43,10 @@ func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {
 
 	return &Agent{
 		circle: circle,
-		prog:   f.Prog.GetByColor(white),
+		prog:   f.Prog.SimpleColor,
 		person: p,
 		cursor: &common.Pos{X: x2, Y: y2},
+		color:  white,
 	}
 }
 
@@ -60,7 +62,12 @@ func (a *Agent) Draw(scale float32) error {
 	x2 := x + (a.circle.Radius * float32(math.Cos(angle)))
 	y2 := y + (a.circle.Radius * float32(math.Sin(angle)))
 	gl.UseProgram(a.prog)
+	gl.Uniform3f(gl.GetUniformLocation(a.prog, gl.Str("objectColor"+"\x00")), a.color.R, a.color.G, a.color.B)
 	a.circle.Shape.Line(x, y, x2, y2)
 
+	return nil
+}
+
+func (a *Agent) Die() error {
 	return nil
 }

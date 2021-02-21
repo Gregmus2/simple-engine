@@ -7,12 +7,14 @@ import (
 type PosToUnitsConverter struct {
 	hW float32
 	hH float32
+	hD float32
 }
 
 func NewPosToUnitsConverter(cfg *common.Config) *PosToUnitsConverter {
 	return &PosToUnitsConverter{
 		hW: float32(cfg.Window.W / 2),
 		hH: float32(cfg.Window.H / 2),
+		hD: 50,
 	}
 }
 
@@ -30,4 +32,8 @@ func (ph *PosToUnitsConverter) W(w float32) float32 {
 
 func (ph *PosToUnitsConverter) H(h float32) float32 {
 	return h / ph.hH
+}
+
+func (ph *PosToUnitsConverter) D(d float32) float32 {
+	return d / ph.hD
 }

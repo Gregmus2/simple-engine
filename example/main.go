@@ -20,7 +20,7 @@ func main() {
 		logrus.WithError(err).Fatal("error building DI container")
 	}
 
-	if err := c.Invoke(func(app *engine.App, agents *Agents) {
+	if err := c.Invoke(func(app *engine.App, agents *Light) {
 		app.InitWithScene(agents)
 		app.Loop()
 	}); err != nil {
@@ -38,6 +38,10 @@ func buildContainer(c *dig.Container) error {
 	}
 
 	if err := c.Provide(NewInit); err != nil {
+		return err
+	}
+
+	if err := c.Provide(NewLight); err != nil {
 		return err
 	}
 

@@ -20,6 +20,7 @@ type Circle struct {
 	Fixture *box2d.B2Fixture
 	prog    uint32
 	Shape   *graphics.ShapeHelper
+	color   graphics.Color
 }
 
 func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
@@ -35,16 +36,22 @@ func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 		Radius:  model.Radius,
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
-		prog:    m.Prog.GetByColor(model.Color),
+		prog:    m.Prog.SimpleColor,
 		Shape:   m.Shape,
+		color:   model.Color,
 	}
 }
 
 func (o *Circle) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
 	gl.UseProgram(o.prog)
+	gl.Uniform3f(gl.GetUniformLocation(o.prog, gl.Str("objectColor"+"\x00")), o.color.R, o.color.G, o.color.B)
 	o.Shape.Circle(float32(pos.X)*scale, float32(pos.Y)*scale, o.Radius)
 	gl.UseProgram(0)
 
+	return nil
+}
+
+func (o *Circle) Die() error {
 	return nil
 }

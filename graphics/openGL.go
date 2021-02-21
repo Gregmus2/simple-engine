@@ -18,6 +18,8 @@ func NewOpenGL(cfg *common.Config, init common.Init) (*OpenGL, error) {
 	log.Println("OpenGL version", version)
 
 	gl.Enable(gl.MULTISAMPLE)
+	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
 
 	err := init.OpenGL()
 	if err != nil {
@@ -54,13 +56,16 @@ func MakeVBO(points []float32) *uint32 {
 	return &vbo
 }
 
-func MakeVAO(vbo *uint32) *uint32 {
+func MakeVAO(vert *uint32) *uint32 {
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
-	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
+	//gl.EnableVertexAttribArray(0)
+	//gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
+	//gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 4*5, nil)
+
+	gl.EnableVertexAttribArray(*vert)
+	gl.VertexAttribPointer(*vert, 3, gl.FLOAT, false, 5*4, gl.PtrOffset(0))
 
 	return &vao
 }

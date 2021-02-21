@@ -20,7 +20,7 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(graphics.NewProgramFactory); err != nil {
+	if err := c.Provide(graphics.NewPrograms); err != nil {
 		return nil, err
 	}
 
