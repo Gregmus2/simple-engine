@@ -6,10 +6,8 @@ import (
 	"github.com/Gregmus2/simple-engine/objects"
 	"github.com/Gregmus2/simple-engine/scenes"
 	"github.com/gregmus2/nnga"
-	"github.com/patrikeh/go-deep"
 	"math"
 	"math/rand"
-	"time"
 )
 
 type Agents struct {
@@ -33,49 +31,49 @@ func NewAgents(base scenes.Base, f *ObjectFactory, con *graphics.PercentToPosCon
 }
 
 func (d *Agents) Init() {
-	//time.Sleep(5 * time.Second)
-
-	rand.Seed(time.Now().UTC().UnixNano())
-
-	d.walls()
-
-	d.ga = nnga.NewGA(100, &deep.Config{
-		/* Input dimensionality */
-		Inputs: 2,
-		/* Two hidden layers consisting of two neurons each, and a single output */
-		Layout: []int{2, 4, 2},
-		/* Activation functions: Sigmoid, Tanh, ReLU, Linear */
-		Activation: deep.ActivationSigmoid,
-		/* Determines output layer activation & loss function:
-		ModeRegression: linear outputs with MSE loss
-		ModeMultiClass: softmax output with Cross Entropy loss
-		ModeMultiLabel: sigmoid output with Cross Entropy loss
-		ModeBinary: sigmoid output with binary CE loss */
-		Mode: deep.ModeBinary,
-		/* Weight initializers: {deep.NewNormal(μ, σ), deep.NewUniform(μ, σ)} */
-		Weight: deep.NewNormal(1.0, 0.0),
-		/* Apply bias */
-		Bias: true,
-	}, &nnga.Coefficients{
-		Scale:                   1,
-		Selection:               0.2,
-		MutationClassic:         0.1,
-		MutationGrowth:          2,
-		MutationGenesMaxPercent: 0.2,
-		MutationOffset:          0.1,
-	})
-
-	for i := 0; i < 50; i++ {
-		food := d.factory.NewFood(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)))
-		d.DrawObjects.Put(food)
-		d.food = append(d.food, food)
-	}
-
-	for _, person := range d.ga.Persons {
-		agent := d.factory.NewAgent(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)), person)
-		d.DrawObjects.Put(agent)
-		d.agents = append(d.agents, agent)
-	}
+	////time.Sleep(5 * time.Second)
+	//
+	//rand.Seed(time.Now().UTC().UnixNano())
+	//
+	//d.walls()
+	//
+	//d.ga = nnga.NewGA(100, &deep.Config{
+	//	/* Input dimensionality */
+	//	Inputs: 2,
+	//	/* Two hidden layers consisting of two neurons each, and a single output */
+	//	Layout: []int{2, 4, 2},
+	//	/* Activation functions: Sigmoid, Tanh, ReLU, Linear */
+	//	Activation: deep.ActivationSigmoid,
+	//	/* Determines output layer activation & loss function:
+	//	ModeRegression: linear outputs with MSE loss
+	//	ModeMultiClass: softmax output with Cross Entropy loss
+	//	ModeMultiLabel: sigmoid output with Cross Entropy loss
+	//	ModeBinary: sigmoid output with binary CE loss */
+	//	Mode: deep.ModeBinary,
+	//	/* Weight initializers: {deep.NewNormal(μ, σ), deep.NewUniform(μ, σ)} */
+	//	Weight: deep.NewNormal(1.0, 0.0),
+	//	/* Apply bias */
+	//	Bias: true,
+	//}, &nnga.Coefficients{
+	//	Scale:                   1,
+	//	Selection:               0.2,
+	//	MutationClassic:         0.1,
+	//	MutationGrowth:          2,
+	//	MutationGenesMaxPercent: 0.2,
+	//	MutationOffset:          0.1,
+	//})
+	//
+	//for i := 0; i < 50; i++ {
+	//	food := d.factory.NewFood(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)))
+	//	d.DrawObjects.Put(food)
+	//	d.food = append(d.food, food)
+	//}
+	//
+	//for _, person := range d.ga.Persons {
+	//	agent := d.factory.NewAgent(float64(rand.Intn(d.Cfg.Window.W)), float64(rand.Intn(d.Cfg.Window.H)), person)
+	//	d.DrawObjects.Put(agent)
+	//	d.agents = append(d.agents, agent)
+	//}
 }
 
 func (d *Agents) PreUpdate() {

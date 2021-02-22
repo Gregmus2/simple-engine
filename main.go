@@ -32,6 +32,18 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
+	if err := c.Provide(graphics.NewDrawFunctionsDictionary); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(graphics.NewCamera); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(graphics.NewDrawer); err != nil {
+		return nil, err
+	}
+
 	if err := c.Provide(graphics.NewShapeFactory); err != nil {
 		return nil, err
 	}

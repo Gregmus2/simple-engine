@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// todo move opengl shader scripts to separate files
+// todo refactoring directories
+
 type Programs struct {
 	SimpleColor uint32
 	Light       uint32
@@ -90,7 +93,6 @@ const fragmentShader string = `
 	} 
 ` + "\x00"
 
-// todo need to compile all colors at the beginning
 func NewPrograms() *Programs {
 	p := &Programs{}
 	p.SimpleColor = p.buildProgram(vertexShader, fragmentShader)

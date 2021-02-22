@@ -6,7 +6,6 @@ import (
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/sirupsen/logrus"
 )
 
 type App struct {
@@ -15,6 +14,7 @@ type App struct {
 	GL     *graphics.OpenGL
 
 	cfg           *common.Config
+	drawer        *graphics.Drawer
 	updateActions []func()
 	scale         float32
 	scene         common.Scene
@@ -25,13 +25,14 @@ const velocityIterations = 8
 const positionIterations = 2
 const timeStep = 1.0 / 40
 
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World) (*App, error) {
+func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World, d *graphics.Drawer) (*App, error) {
 	return &App{
 		Window: window,
 		GL:     gl,
 		World:  world,
 		scale:  cfg.Graphics.Scale,
 		cfg:    cfg,
+		drawer: d,
 	}, nil
 }
 
@@ -86,10 +87,8 @@ func (app *App) OnRender() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	for d := range app.scene.Drawable().Elements {
-		err := d.Draw(app.scale)
-		if err != nil {
-			logrus.WithError(err).Fatal("draw error")
-		}
+		pos := d.GetPosition()
+		app.drawer.Draw(float32(pos.X), float32(pos.Y), app.scale, d.Shader(), d.Shape())
 	}
 
 	glfw.PollEvents()

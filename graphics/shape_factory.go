@@ -1,37 +1,39 @@
 package graphics
 
 import (
+	"github.com/Gregmus2/simple-engine/common"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"math"
 )
 
 const DoublePI float64 = 2.0 * math.Pi
 
-type ShapeHelper struct {
-	helper *PosToUnitsConverter
+type ShapeFactory struct {
+	helper        *PosToUnitsConverter
+	drawFunctions *DrawFunctionsDictionary
 }
 
-func NewShapeFactory(h *PosToUnitsConverter) *ShapeHelper {
-	return &ShapeHelper{helper: h}
+func NewShapeFactory(h *PosToUnitsConverter, d *DrawFunctionsDictionary) *ShapeFactory {
+	return &ShapeFactory{helper: h, drawFunctions: d}
 }
 
-func (s *ShapeHelper) Box(w, h, d float32) (*uint32, *uint32) {
+func (s *ShapeFactory) Box(w, h, d float32) common.Shape {
 	box := s.boxVertexes(w, h, d)
 	vbo := MakeVBO(box)
 	vao := MakeVAO(false)
 
-	return vbo, vao
+	return NewShape(vao, vbo, s.drawFunctions.Box)
 }
 
-func (s *ShapeHelper) LightBox(w, h, d float32) (*uint32, *uint32) {
+func (s *ShapeFactory) LightBox(w, h, d float32) common.Shape {
 	box := s.boxVertexes(w, h, d)
 	vbo := MakeVBO(box)
 	vao := MakeVAO(true)
 
-	return vbo, vao
+	return NewShape(vao, vbo, s.drawFunctions.Box)
 }
 
-func (s *ShapeHelper) boxVertexes(w, h, d float32) []float32 {
+func (s *ShapeFactory) boxVertexes(w, h, d float32) []float32 {
 	// width, height, depth
 	w, h, d = s.helper.W(w), s.helper.H(h), s.helper.D(d)
 	// half width, half height, half depth
@@ -84,7 +86,7 @@ func (s *ShapeHelper) boxVertexes(w, h, d float32) []float32 {
 	}
 }
 
-func (s *ShapeHelper) Circle(x, y, r float32) {
+func (s *ShapeFactory) Circle(x, y, r float32) {
 	circle := s.circleVertexes(x, y, r, 360)
 	vbo := MakeVBO(circle)
 	vao := MakeVAO(false)
@@ -92,7 +94,7 @@ func (s *ShapeHelper) Circle(x, y, r float32) {
 	ClearBuffers(vbo, vao)
 }
 
-func (s *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
+func (s *ShapeFactory) circleVertexes(x, y, r float32, sides int) []float32 {
 	x, y, rW, rH := s.helper.X(x), s.helper.Y(y), s.helper.W(r), s.helper.H(r)
 
 	vertexes := make([]float32, (sides+2)*3)
@@ -105,7 +107,7 @@ func (s *ShapeHelper) circleVertexes(x, y, r float32, sides int) []float32 {
 	return vertexes
 }
 
-func (s *ShapeHelper) Line(x1, y1, x2, y2 float32) {
+func (s *ShapeFactory) Line(x1, y1, x2, y2 float32) {
 	vertexes := []float32{
 		s.helper.X(x1), s.helper.Y(y1), 0,
 		s.helper.X(x2), s.helper.Y(y2), 0,

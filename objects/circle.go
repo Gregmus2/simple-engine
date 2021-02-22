@@ -19,7 +19,7 @@ type Circle struct {
 	Body    *box2d.B2Body
 	Fixture *box2d.B2Fixture
 	prog    uint32
-	Shape   *graphics.ShapeHelper
+	Shape   *graphics.ShapeFactory
 	color   graphics.Color
 }
 
