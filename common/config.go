@@ -25,6 +25,11 @@ type Config struct {
 		Scale float32
 		Debug bool
 	}
+	Controls struct {
+		Mouse struct {
+			Sensitivity float32
+		}
+	}
 }
 
 func NewConfig() (*Config, error) {
@@ -60,6 +65,13 @@ func NewConfig() (*Config, error) {
 			Scale float32
 			Debug bool
 		}{Scale: 100},
+		Controls: struct {
+			Mouse struct {
+				Sensitivity float32
+			}
+		}{Mouse: struct{ Sensitivity float32 }{
+			Sensitivity: 50,
+		}},
 	}
 
 	yamlFile, err := ioutil.ReadFile("config.yaml")

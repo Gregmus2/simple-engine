@@ -11,3 +11,6 @@ physics:
 graphics:
   scale: 100
   debug: true
+controls:
+  mouse:
+    sensitivity: 20

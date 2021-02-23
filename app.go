@@ -15,7 +15,7 @@ type App struct {
 
 	cfg           *common.Config
 	drawer        *graphics.Drawer
-	updateActions []func()
+	updateActions []func(delta float64)
 	scale         float32
 	scene         common.Scene
 	quit          bool
@@ -44,12 +44,14 @@ func (app *App) InitWithScene(scene common.Scene) {
 }
 
 func (app *App) initCallbacks() {
-	app.Window.SetKeyCallback(app.scene.Callback)
-	app.updateActions = make([]func(), 0)
+	app.Window.SetKeyCallback(app.scene.KeyCallback)
+	app.Window.SetMouseButtonCallback(app.scene.MouseButtonCallback)
+	app.Window.SetCursorPosCallback(app.scene.MouseMoveCallback)
+	app.updateActions = make([]func(delta float64), 0)
 	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
 	if app.cfg.Physics.Enable {
-		app.updateActions = append(app.updateActions, func() {
-			app.World.Step(timeStep, velocityIterations, positionIterations)
+		app.updateActions = append(app.updateActions, func(delta float64) {
+			app.World.Step(delta, velocityIterations, positionIterations)
 		})
 	}
 	app.updateActions = append(app.updateActions, app.scene.Update)
@@ -57,11 +59,16 @@ func (app *App) initCallbacks() {
 
 func (app *App) Loop() {
 	if app.scene == nil {
-		panic("scene isn't set")
+		panic("scene wasn't set")
 	}
 
+	lastFrame := glfw.GetTime()
 	for !app.Window.ShouldClose() {
-		app.OnUpdate()
+		currentFrame := glfw.GetTime()
+		dTime := currentFrame - lastFrame
+		lastFrame = currentFrame
+
+		app.OnUpdate(dTime)
 		app.OnRender()
 
 		if app.quit {
@@ -77,9 +84,9 @@ func (app *App) Destroy() {
 	glfw.Terminate()
 }
 
-func (app *App) OnUpdate() {
+func (app *App) OnUpdate(delta float64) {
 	for _, action := range app.updateActions {
-		action()
+		action(delta)
 	}
 }
 

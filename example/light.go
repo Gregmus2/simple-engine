@@ -27,7 +27,7 @@ func (l *Light) Init() {
 		Y:       l.con.Y(0),
 		W:       l.con.W(100),
 		H:       1,
-		D:       l.con.D(10),
+		D:       l.con.D(70),
 		T:       box2d.B2BodyType.B2_staticBody,
 		Color:   graphics.White(),
 		Density: 0,

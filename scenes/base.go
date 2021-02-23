@@ -7,18 +7,22 @@ import (
 )
 
 type Base struct {
-	DrawObjects *common.DrawableCollection
-	World       *box2d.B2World
-	Cfg         *common.Config
-	Window      *glfw.Window
+	DrawObjects  *common.DrawableCollection
+	World        *box2d.B2World
+	Cfg          *common.Config
+	Window       *glfw.Window
+	Camera       common.Camera
+	mouseControl common.MouseController
 }
 
-func NewBase(w *box2d.B2World, cfg *common.Config, win *glfw.Window) Base {
+func NewBase(w *box2d.B2World, cfg *common.Config, win *glfw.Window, c common.Camera, m common.MouseController) Base {
 	return Base{
-		DrawObjects: common.NewDrawableCollection(),
-		World:       w,
-		Cfg:         cfg,
-		Window:      win,
+		DrawObjects:  common.NewDrawableCollection(),
+		World:        w,
+		Cfg:          cfg,
+		Window:       win,
+		Camera:       c,
+		mouseControl: m,
 	}
 }
 
@@ -26,22 +30,30 @@ func (b *Base) Init() {
 
 }
 
-func (b *Base) PreUpdate() {
+func (b *Base) PreUpdate(delta float64) {
 
 }
 
-func (b *Base) Update() {
-
+func (b *Base) Update(delta float64) {
+	b.mouseControl.Update(delta)
 }
 
 func (b *Base) Drawable() *common.DrawableCollection {
 	return b.DrawObjects
 }
 
-func (b *Base) Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+func (b *Base) KeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 	if key == glfw.KeyEscape && action == glfw.Press {
 		b.Window.SetShouldClose(true)
 	}
+}
+
+func (b *Base) MouseButtonCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
+	b.mouseControl.MouseButtonCallback(w, button, action, mods)
+}
+
+func (b *Base) MouseMoveCallback(w *glfw.Window, x, y float64) {
+	b.mouseControl.MouseMoveCallback(w, x, y)
 }
 
 func (b *Base) BeginContact(contact box2d.B2ContactInterface) {

@@ -14,7 +14,7 @@ func NewObjectShader(program uint32, color graphics.Color) *ObjectShader {
 	return &ObjectShader{BaseShader{color: color, program: program}}
 }
 
-func (s *ObjectShader) ApplyShader(projection, view, model *mgl32.Mat4) {
+func (s *ObjectShader) ApplyShader(projection, view, model mgl32.Mat4) {
 	s.useProgram()
 	s.applyProjection(projection)
 	s.applyCamera(view)

@@ -12,7 +12,7 @@ func NewLightShader(program uint32) *LightShader {
 	return &LightShader{BaseShader{program: program}}
 }
 
-func (s *LightShader) ApplyShader(projection, view, model *mgl32.Mat4) {
+func (s *LightShader) ApplyShader(projection, view, model mgl32.Mat4) {
 	s.useProgram()
 	s.applyProjection(projection)
 	s.applyCamera(view)
