@@ -12,6 +12,6 @@ require (
 	github.com/patrikeh/go-deep v0.0.0-20191210195838-b811ffc4083e
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.5.0
-	go.uber.org/dig v1.8.0
+	go.uber.org/dig v1.10.0
 	gopkg.in/yaml.v2 v2.2.2
 )

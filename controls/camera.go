@@ -97,6 +97,8 @@ func (c *CameraControl) Key(key glfw.Key, action glfw.Action) {
 			c.yVelocity = -1
 		case glfw.KeySpace:
 			c.yVelocity = 1
+		case glfw.KeyTab:
+			c.rotation = !c.rotation
 		}
 	}
 

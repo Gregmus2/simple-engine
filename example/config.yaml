@@ -1,6 +1,6 @@
 window:
-  w: 1200
-  h: 600
+  w: 1800
+  h: 900
   title: test
 physics:
   enable: true

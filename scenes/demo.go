@@ -11,9 +11,9 @@ type Demo struct {
 	con     *graphics.PercentToPosConverter
 }
 
-func NewDemo(base Base, f *objects.ObjectFactory, con *graphics.PercentToPosConverter) *Demo {
+func NewDemo(base *Base, f *objects.ObjectFactory, con *graphics.PercentToPosConverter) *Demo {
 	return &Demo{
-		Base:    base,
+		Base:    *base,
 		factory: f,
 		con:     con,
 	}

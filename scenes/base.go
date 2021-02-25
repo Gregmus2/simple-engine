@@ -4,6 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"go.uber.org/dig"
 )
 
 type Base struct {
@@ -15,14 +16,24 @@ type Base struct {
 	cameraControl common.CameraControl
 }
 
-func NewBase(w *box2d.B2World, cfg *common.Config, win *glfw.Window, c common.Camera, m common.CameraControl) Base {
-	return Base{
+type Params struct {
+	dig.In
+
+	World         *box2d.B2World
+	Cfg           *common.Config
+	Window        *glfw.Window
+	Camera        common.Camera
+	CameraControl common.CameraControl
+}
+
+func NewBase(params Params) *Base {
+	return &Base{
 		DrawObjects:   common.NewDrawableCollection(),
-		World:         w,
-		Cfg:           cfg,
-		Window:        win,
-		Camera:        c,
-		cameraControl: m,
+		World:         params.World,
+		Cfg:           params.Cfg,
+		Window:        params.Window,
+		Camera:        params.Camera,
+		cameraControl: params.CameraControl,
 	}
 }
 

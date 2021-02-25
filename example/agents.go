@@ -21,9 +21,9 @@ type Agents struct {
 	fixturesToMove []*box2d.B2Fixture
 }
 
-func NewAgents(base scenes.Base, f *ObjectFactory, con *graphics.PercentToPosConverter) *Agents {
+func NewAgents(base *scenes.Base, f *ObjectFactory, con *graphics.PercentToPosConverter) *Agents {
 	return &Agents{
-		Base:           base,
+		Base:           *base,
 		factory:        f,
 		con:            con,
 		fixturesToMove: make([]*box2d.B2Fixture, 0),

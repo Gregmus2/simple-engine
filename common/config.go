@@ -8,10 +8,11 @@ import (
 
 type Config struct {
 	Window struct {
-		Title  string
-		W      int
-		H      int
-		Center *Pos
+		Title    string
+		W        int
+		H        int
+		Center   *Pos
+		FPSLimit int
 	}
 	Physics struct {
 		Enable  bool
@@ -35,14 +36,16 @@ type Config struct {
 func NewConfig() (*Config, error) {
 	cfg := &Config{
 		Window: struct {
-			Title  string
-			W      int
-			H      int
-			Center *Pos
+			Title    string
+			W        int
+			H        int
+			Center   *Pos
+			FPSLimit int
 		}{
-			Title: "Type my name in config.yaml",
-			W:     1024,
-			H:     768,
+			Title:    "Type my name in config.yaml",
+			W:        1024,
+			H:        768,
+			FPSLimit: 60,
 		},
 		Physics: struct {
 			Enable  bool

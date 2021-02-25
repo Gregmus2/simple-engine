@@ -3,36 +3,49 @@ package engine
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/Gregmus2/simple-engine/common"
+	"github.com/Gregmus2/simple-engine/dispatchers"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"go.uber.org/dig"
 )
 
 type App struct {
 	Window *glfw.Window
 	World  *box2d.B2World
 	GL     *graphics.OpenGL
+	update *dispatchers.Update
 
-	cfg           *common.Config
-	drawer        *graphics.Drawer
-	updateActions []func(delta float64)
-	scale         float32
-	scene         common.Scene
-	quit          bool
+	cfg    *common.Config
+	drawer *graphics.Drawer
+	scale  float32
+	scene  common.Scene
+	quit   bool
 }
 
 const velocityIterations = 8
 const positionIterations = 2
-const timeStep = 1.0 / 40
 
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World, d *graphics.Drawer) (*App, error) {
+type Params struct {
+	dig.In
+
+	Config *common.Config
+	Window *glfw.Window
+	OpenGL *graphics.OpenGL
+	World  *box2d.B2World
+	Drawer *graphics.Drawer
+	Update *dispatchers.Update
+}
+
+func NewApp(params Params) (*App, error) {
 	return &App{
-		Window: window,
-		GL:     gl,
-		World:  world,
-		scale:  cfg.Graphics.Scale,
-		cfg:    cfg,
-		drawer: d,
+		cfg:    params.Config,
+		Window: params.Window,
+		GL:     params.OpenGL,
+		World:  params.World,
+		drawer: params.Drawer,
+		update: params.Update,
+		scale:  params.Config.Graphics.Scale,
 	}, nil
 }
 
@@ -48,14 +61,14 @@ func (app *App) initCallbacks() {
 	app.Window.SetMouseButtonCallback(app.scene.MouseButtonCallback)
 	app.Window.SetCursorPosCallback(app.scene.MouseMoveCallback)
 	app.Window.SetScrollCallback(app.scene.ScrollCallback)
-	app.updateActions = make([]func(delta float64), 0)
-	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
+
+	app.update.Subscribe(app.scene.PreUpdate)
 	if app.cfg.Physics.Enable {
-		app.updateActions = append(app.updateActions, func(delta float64) {
+		app.update.Subscribe(func(delta float64) {
 			app.World.Step(delta, velocityIterations, positionIterations)
 		})
 	}
-	app.updateActions = append(app.updateActions, app.scene.Update)
+	app.update.Subscribe(app.scene.Update)
 }
 
 func (app *App) Loop() {
@@ -63,18 +76,14 @@ func (app *App) Loop() {
 		panic("scene wasn't set")
 	}
 
-	lastFrame := glfw.GetTime()
-	for !app.Window.ShouldClose() {
-		currentFrame := glfw.GetTime()
-		dTime := currentFrame - lastFrame
-		lastFrame = currentFrame
+	lastTime := glfw.GetTime()
+	for !app.Window.ShouldClose() && !app.quit {
+		currentTime := glfw.GetTime()
+		dTime := currentTime - lastTime
+		lastTime = currentTime
 
 		app.OnUpdate(dTime)
 		app.OnRender()
-
-		if app.quit {
-			break
-		}
 	}
 
 	app.Destroy()
@@ -86,9 +95,7 @@ func (app *App) Destroy() {
 }
 
 func (app *App) OnUpdate(delta float64) {
-	for _, action := range app.updateActions {
-		action(delta)
-	}
+	app.update.Dispatch(delta)
 }
 
 func (app *App) OnRender() {

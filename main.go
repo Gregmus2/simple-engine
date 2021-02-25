@@ -3,10 +3,12 @@ package engine
 import (
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/controls"
+	"github.com/Gregmus2/simple-engine/dispatchers"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/Gregmus2/simple-engine/objects"
 	"github.com/Gregmus2/simple-engine/physics"
 	"github.com/Gregmus2/simple-engine/scenes"
+	"github.com/Gregmus2/simple-engine/utils"
 	"go.uber.org/dig"
 )
 
@@ -38,6 +40,14 @@ func BuildContainer() (*dig.Container, error) {
 	}
 
 	if err := c.Provide(controls.NewMouseControl); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(dispatchers.NewUpdate); err != nil {
+		return nil, err
+	}
+
+	if err := c.Invoke(utils.NewFPS); err != nil {
 		return nil, err
 	}
 

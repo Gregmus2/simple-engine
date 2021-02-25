@@ -13,9 +13,9 @@ type Light struct {
 	con     *graphics.PercentToPosConverter
 }
 
-func NewLight(base scenes.Base, f *objects.ObjectFactory, con *graphics.PercentToPosConverter) *Light {
+func NewLight(base *scenes.Base, f *objects.ObjectFactory, con *graphics.PercentToPosConverter) *Light {
 	return &Light{
-		Base:    base,
+		Base:    *base,
 		factory: f,
 		con:     con,
 	}
