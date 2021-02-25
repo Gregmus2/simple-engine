@@ -1,14 +1,14 @@
 package engine
 
 import (
-	"github.com/Gregmus2/simple-engine/common"
-	"github.com/Gregmus2/simple-engine/controls"
-	"github.com/Gregmus2/simple-engine/dispatchers"
-	"github.com/Gregmus2/simple-engine/graphics"
-	"github.com/Gregmus2/simple-engine/objects"
-	"github.com/Gregmus2/simple-engine/physics"
-	"github.com/Gregmus2/simple-engine/scenes"
-	"github.com/Gregmus2/simple-engine/utils"
+	"github.com/Gregmus2/simple-engine/internal"
+	"github.com/Gregmus2/simple-engine/internal/common"
+	"github.com/Gregmus2/simple-engine/internal/dispatchers"
+	"github.com/Gregmus2/simple-engine/internal/graphics"
+	"github.com/Gregmus2/simple-engine/internal/objects"
+	"github.com/Gregmus2/simple-engine/internal/physics"
+	"github.com/Gregmus2/simple-engine/internal/scenes"
+	"github.com/Gregmus2/simple-engine/internal/utils"
 	"go.uber.org/dig"
 )
 
@@ -39,7 +39,7 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(controls.NewMouseControl); err != nil {
+	if err := c.Provide(graphics.NewCamera); err != nil {
 		return nil, err
 	}
 
@@ -51,7 +51,11 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(graphics.NewCamera); err != nil {
+	if err := c.Provide(graphics.NewPositionConverter); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(graphics.NewPositionBuilder); err != nil {
 		return nil, err
 	}
 
@@ -75,7 +79,7 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(NewApp); err != nil {
+	if err := c.Provide(internal.NewApp); err != nil {
 		return nil, err
 	}
 
