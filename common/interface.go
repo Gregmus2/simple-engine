@@ -21,6 +21,7 @@ type Scene interface {
 	KeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	MouseButtonCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey)
 	MouseMoveCallback(w *glfw.Window, x, y float64)
+	ScrollCallback(w *glfw.Window, xOffset, yOffset float64)
 	box2d.B2ContactListenerInterface
 }
 
@@ -44,8 +45,10 @@ type Shape interface {
 	Draw()
 }
 
-type MouseController interface {
-	MouseButtonCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey)
-	MouseMoveCallback(w *glfw.Window, x, y float64)
+type CameraControl interface {
+	MouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action)
+	MouseMove(x, y float64)
+	Scroll(yOffset float64)
+	Key(key glfw.Key, action glfw.Action)
 	Update(delta float64)
 }

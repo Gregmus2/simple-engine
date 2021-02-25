@@ -47,6 +47,7 @@ func (app *App) initCallbacks() {
 	app.Window.SetKeyCallback(app.scene.KeyCallback)
 	app.Window.SetMouseButtonCallback(app.scene.MouseButtonCallback)
 	app.Window.SetCursorPosCallback(app.scene.MouseMoveCallback)
+	app.Window.SetScrollCallback(app.scene.ScrollCallback)
 	app.updateActions = make([]func(delta float64), 0)
 	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
 	if app.cfg.Physics.Enable {
