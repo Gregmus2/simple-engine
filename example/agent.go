@@ -12,9 +12,10 @@ import (
 
 type Agent struct {
 	circle *objects.Circle
-	prog   uint32
+	prog   *graphics.Program
 	person *nnga.Person
 	cursor *common.Pos
+	color  graphics.Color
 
 	targetPos box2d.B2Vec2
 	distance  float64
@@ -42,7 +43,8 @@ func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {
 
 	return &Agent{
 		circle: circle,
-		prog:   f.Prog.GetByColor(white),
+		prog:   f.Prog,
+		color:  white,
 		person: p,
 		cursor: &common.Pos{X: x2, Y: y2},
 	}
@@ -59,8 +61,9 @@ func (a *Agent) Draw(scale float32) error {
 	x, y := float32(pos.X)*scale, float32(pos.Y)*scale
 	x2 := x + (a.circle.Radius * float32(math.Cos(angle)))
 	y2 := y + (a.circle.Radius * float32(math.Sin(angle)))
-	gl.UseProgram(a.prog)
+	a.prog.ApplyProgram(a.color)
 	a.circle.Shape.Line(x, y, x2, y2)
+	gl.UseProgram(0)
 
 	return nil
 }

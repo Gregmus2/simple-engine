@@ -8,12 +8,12 @@ import (
 
 type ObjectFactory struct {
 	Cfg       *common.Config
-	Prog      *graphics.ProgramFactory
+	Prog      *graphics.Program
 	Shape     *graphics.ShapeHelper
 	World     *box2d.B2World
 	Converter *graphics.PercentToPosConverter
 }
 
-func NewObjectFactory(cfg *common.Config, p *graphics.ProgramFactory, s *graphics.ShapeHelper, w *box2d.B2World, c *graphics.PercentToPosConverter) *ObjectFactory {
+func NewObjectFactory(cfg *common.Config, p *graphics.Program, s *graphics.ShapeHelper, w *box2d.B2World, c *graphics.PercentToPosConverter) *ObjectFactory {
 	return &ObjectFactory{Cfg: cfg, Prog: p, Shape: s, World: w, Converter: c}
 }

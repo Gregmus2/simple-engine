@@ -18,8 +18,9 @@ type Box struct {
 	Fixture *box2d.B2Fixture
 	w       float32
 	h       float32
-	prog    uint32
+	prog    *graphics.Program
 	shape   *graphics.ShapeHelper
+	color   graphics.Color
 }
 
 func (m *ObjectFactory) NewBox(model BoxModel) *Box {
@@ -37,14 +38,15 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 		Fixture: body.CreateFixture(&shape, model.Density),
 		w:       float32(model.W),
 		h:       float32(model.H),
-		prog:    m.Prog.GetByColor(model.Color),
+		prog:    m.Prog,
 		shape:   m.Shape,
+		color:   model.Color,
 	}
 }
 
 func (o *Box) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
-	gl.UseProgram(o.prog)
+	o.prog.ApplyProgram(o.color)
 	o.shape.Box(float32(pos.X)*scale-o.w/2, float32(pos.Y)*scale+o.h/2, o.w, o.h)
 	gl.UseProgram(0)
 

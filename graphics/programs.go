@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-type ProgramFactory struct {
-	programs map[string]uint32
+type Program struct {
+	program uint32
 }
 
 const vertexShaderSource string = `
@@ -22,57 +22,46 @@ const vertexShaderSource string = `
 const fragmentShaderTemplate string = `
     #version 410
     out vec4 frag_colour;
+	uniform vec3 color;
     void main() {
-        frag_colour = vec4(%f, %f, %f, %f);
+        frag_colour = vec4(color, 1.0);
     }
 ` + "\x00"
 
-// todo need to compile all colors at the beginning
-func NewProgramFactory() *ProgramFactory {
-	return &ProgramFactory{programs: make(map[string]uint32)}
+func NewProgram() *Program {
+	p := &Program{}
+	p.generateProgram()
+
+	return p
 }
 
-func (c *ProgramFactory) GetByColor(color Color) uint32 {
-	prog, exists := c.programs[c.hash(color)]
-	if exists {
-		return prog
-	}
-
-	prog = c.buildProgram(color)
-	c.programs[c.hash(color)] = prog
-
-	return prog
-}
-
-func (c *ProgramFactory) hash(color Color) string {
-	return fmt.Sprintf("%f %f %f %f", color.A, color.R, color.G, color.B)
-}
-
-func (c *ProgramFactory) buildProgram(color Color) uint32 {
+func (c *Program) generateProgram() {
 	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
-		return 0
+		return
 	}
 
-	fragmentShaderSource := fmt.Sprintf(fragmentShaderTemplate, color.R, color.G, color.B, color.A)
-	fragmentShader, err := c.compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	fragmentShader, err := c.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
-		return 0
+		return
 	}
 
-	prog := gl.CreateProgram()
-	gl.AttachShader(prog, vertexShader)
-	gl.AttachShader(prog, fragmentShader)
-	gl.LinkProgram(prog)
+	c.program = gl.CreateProgram()
+	gl.AttachShader(c.program, vertexShader)
+	gl.AttachShader(c.program, fragmentShader)
+	gl.LinkProgram(c.program)
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
-
-	return prog
 }
 
-func (c *ProgramFactory) compileShader(source string, shaderType uint32) (uint32, error) {
+func (c *Program) ApplyProgram(color Color) {
+	gl.UseProgram(c.program)
+	gl.Uniform3f(gl.GetUniformLocation(c.program, gl.Str("color\x00")), color.R, color.G, color.B)
+}
+
+func (c *Program) compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
 	csources, free := gl.Strs(source)

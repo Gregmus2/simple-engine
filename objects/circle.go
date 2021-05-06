@@ -18,8 +18,9 @@ type Circle struct {
 	Radius  float32
 	Body    *box2d.B2Body
 	Fixture *box2d.B2Fixture
-	prog    uint32
+	prog    *graphics.Program
 	Shape   *graphics.ShapeHelper
+	color   graphics.Color
 }
 
 func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
@@ -35,14 +36,15 @@ func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 		Radius:  model.Radius,
 		Body:    body,
 		Fixture: body.CreateFixture(&shape, model.Density),
-		prog:    m.Prog.GetByColor(model.Color),
+		prog:    m.Prog,
 		Shape:   m.Shape,
+		color:   model.Color,
 	}
 }
 
 func (o *Circle) Draw(scale float32) error {
 	pos := o.Body.GetPosition()
-	gl.UseProgram(o.prog)
+	o.prog.ApplyProgram(o.color)
 	o.Shape.Circle(float32(pos.X)*scale, float32(pos.Y)*scale, o.Radius)
 	gl.UseProgram(0)
 

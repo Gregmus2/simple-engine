@@ -6,13 +6,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-type GLFW struct {
-}
-
-func NewGLFW() *GLFW {
-	return &GLFW{}
-}
-
 func NewWindow(cfg *common.Config) (*glfw.Window, error) {
 	if err := glfw.Init(); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize glfw")
@@ -30,6 +23,11 @@ func NewWindow(cfg *common.Config) (*glfw.Window, error) {
 		return nil, errors.Wrap(err, "failed to create window")
 	}
 	window.MakeContextCurrent()
+
+	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
+	if glfw.RawMouseMotionSupported() {
+		window.SetInputMode(glfw.RawMouseMotion, glfw.True)
+	}
 
 	return window, nil
 }
