@@ -65,7 +65,7 @@ func NewConfig() (*Config, error) {
 		}{Scale: 100},
 		Camera: struct {
 			Speed float32
-		}{Speed: 0.1},
+		}{Speed: 5},
 	}
 
 	yamlFile, err := ioutil.ReadFile("config.yaml")
