@@ -50,15 +50,15 @@ func (f *ObjectFactory) NewAgent(x, y float64, p *nnga.Person) *Agent {
 	}
 }
 
-func (a *Agent) Draw(scale float32) error {
-	err := a.circle.Draw(scale)
+func (a *Agent) Draw(scale, offsetX, offsetY float32) error {
+	err := a.circle.Draw(scale, offsetX, offsetY)
 	if err != nil {
 		return err
 	}
 
 	angle := a.circle.Body.GetAngle()
 	pos := a.circle.Body.GetPosition()
-	x, y := float32(pos.X)*scale, float32(pos.Y)*scale
+	x, y := (float32(pos.X)+offsetX)*scale, (float32(pos.Y)+offsetY)*scale
 	x2 := x + (a.circle.Radius * float32(math.Cos(angle)))
 	y2 := y + (a.circle.Radius * float32(math.Sin(angle)))
 	a.prog.ApplyProgram(a.color)

@@ -48,6 +48,10 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
+	if err := c.Provide(graphics.NewCamera); err != nil {
+		return nil, err
+	}
+
 	if err := c.Provide(NewApp); err != nil {
 		return nil, err
 	}

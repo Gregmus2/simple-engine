@@ -44,10 +44,10 @@ func (m *ObjectFactory) NewBox(model BoxModel) *Box {
 	}
 }
 
-func (o *Box) Draw(scale float32) error {
+func (o *Box) Draw(scale, offsetX, offsetY float32) error {
 	pos := o.Body.GetPosition()
 	o.prog.ApplyProgram(o.color)
-	o.shape.Box(float32(pos.X)*scale-o.w/2, float32(pos.Y)*scale+o.h/2, o.w, o.h)
+	o.shape.Box((float32(pos.X)+offsetX)*scale-o.w/2, (float32(pos.Y)+offsetY)*scale+o.h/2, o.w, o.h)
 	gl.UseProgram(0)
 
 	return nil

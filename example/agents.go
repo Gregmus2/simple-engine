@@ -79,6 +79,7 @@ func (d *Agents) Init() {
 }
 
 func (d *Agents) PreUpdate() {
+	d.Base.PreUpdate()
 	for _, agent := range d.agents {
 		pos := agent.circle.Body.GetPosition()
 		targetPos := d.food[0].Body.GetPosition()

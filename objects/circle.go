@@ -42,10 +42,10 @@ func (m *ObjectFactory) NewCircle(model CircleModel) *Circle {
 	}
 }
 
-func (o *Circle) Draw(scale float32) error {
+func (o *Circle) Draw(scale, offsetX, offsetY float32) error {
 	pos := o.Body.GetPosition()
 	o.prog.ApplyProgram(o.color)
-	o.Shape.Circle(float32(pos.X)*scale, float32(pos.Y)*scale, o.Radius)
+	o.Shape.Circle((float32(pos.X)+offsetX)*scale, (float32(pos.Y)+offsetY)*scale, o.Radius)
 	gl.UseProgram(0)
 
 	return nil

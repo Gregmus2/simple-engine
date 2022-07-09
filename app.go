@@ -16,7 +16,7 @@ type App struct {
 
 	cfg           *common.Config
 	updateActions []func()
-	scale         float32
+	camera        *graphics.Camera
 	scene         common.Scene
 	quit          bool
 }
@@ -25,12 +25,14 @@ const velocityIterations = 8
 const positionIterations = 2
 const timeStep = 1.0 / 40
 
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World) (*App, error) {
+func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World, c *graphics.Camera) (*App, error) {
+	c.Zoom(cfg.Graphics.Scale)
+
 	return &App{
 		Window: window,
 		GL:     gl,
 		World:  world,
-		scale:  cfg.Graphics.Scale,
+		camera: c,
 		cfg:    cfg,
 	}, nil
 }
@@ -86,7 +88,8 @@ func (app *App) OnRender() {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
 	for d := range app.scene.Drawable().Elements {
-		err := d.Draw(app.scale)
+		x, y := app.camera.Position()
+		err := d.Draw(app.camera.Scale(), x, y)
 		if err != nil {
 			logrus.WithError(err).Fatal("draw error")
 		}
