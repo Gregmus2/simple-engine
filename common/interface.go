@@ -15,6 +15,9 @@ type Scene interface {
 	Update()
 	Drawable() *DrawableCollection
 	Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
+	MouseCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey)
+	ScrollCallback(w *glfw.Window, xoff, yoff float64)
+	CursorPositionCallback(w *glfw.Window, xpos, ypos float64)
 	box2d.B2ContactListenerInterface
 }
 

@@ -24,7 +24,7 @@ func NewWindow(cfg *common.Config) (*glfw.Window, error) {
 	}
 	window.MakeContextCurrent()
 
-	window.SetInputMode(glfw.CursorMode, glfw.CursorDisabled)
+	window.SetInputMode(glfw.CursorMode, glfw.CursorNormal)
 	if glfw.RawMouseMotionSupported() {
 		window.SetInputMode(glfw.RawMouseMotion, glfw.True)
 	}

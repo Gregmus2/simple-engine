@@ -30,7 +30,7 @@ func (b *Base) Init() {
 }
 
 func (b *Base) PreUpdate() {
-	b.Camera.Update()
+
 }
 
 func (b *Base) Update() {
@@ -45,27 +45,19 @@ func (b *Base) Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.
 	switch {
 	case key == glfw.KeyEscape && action == glfw.Press:
 		b.Window.SetShouldClose(true)
-	case key == glfw.KeyW && action == glfw.Press:
-		b.Camera.Moving(0, -1)
-	case key == glfw.KeyS && action == glfw.Press:
-		b.Camera.Moving(0, 1)
-	case key == glfw.KeyA && action == glfw.Press:
-		b.Camera.Moving(1, 0)
-	case key == glfw.KeyD && action == glfw.Press:
-		b.Camera.Moving(-1, 0)
-	case key == glfw.KeyW && action == glfw.Release:
-		b.Camera.StopMoving(0, -1)
-	case key == glfw.KeyS && action == glfw.Release:
-		b.Camera.StopMoving(0, 1)
-	case key == glfw.KeyA && action == glfw.Release:
-		b.Camera.StopMoving(1, 0)
-	case key == glfw.KeyD && action == glfw.Release:
-		b.Camera.StopMoving(-1, 0)
-	case key == glfw.KeyQ && action == glfw.Press:
-		b.Camera.Zoom(0.5)
-	case key == glfw.KeyE && action == glfw.Press:
-		b.Camera.Zoom(2)
 	}
+}
+
+func (b *Base) MouseCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
+	b.Camera.MouseCallback(button, action)
+}
+
+func (b *Base) ScrollCallback(w *glfw.Window, xoff, yoff float64) {
+	b.Camera.ScrollCallback(yoff)
+}
+
+func (b *Base) CursorPositionCallback(w *glfw.Window, xpos, ypos float64) {
+	b.Camera.CursorPositionCallback(xpos, ypos)
 }
 
 func (b *Base) BeginContact(contact box2d.B2ContactInterface) {

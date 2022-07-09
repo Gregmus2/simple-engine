@@ -25,9 +25,6 @@ type Config struct {
 		Scale float32
 		Debug bool
 	}
-	Camera struct {
-		Speed float32
-	}
 }
 
 func NewConfig() (*Config, error) {
@@ -63,9 +60,6 @@ func NewConfig() (*Config, error) {
 			Scale float32
 			Debug bool
 		}{Scale: 100},
-		Camera: struct {
-			Speed float32
-		}{Speed: 5},
 	}
 
 	yamlFile, err := ioutil.ReadFile("config.yaml")
