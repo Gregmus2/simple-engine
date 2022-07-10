@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"github.com/ByteArena/box2d"
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/go-gl/gl/v4.6-core/gl"
@@ -11,7 +10,6 @@ import (
 
 type App struct {
 	Window *glfw.Window
-	World  *box2d.B2World
 	GL     *graphics.OpenGL
 
 	cfg           *common.Config
@@ -21,39 +19,29 @@ type App struct {
 	quit          bool
 }
 
-const velocityIterations = 8
-const positionIterations = 2
-const timeStep = 1.0 / 40
-
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, world *box2d.B2World, c *graphics.Camera) (*App, error) {
+func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera) (*App, error) {
 	return &App{
 		Window: window,
 		GL:     gl,
-		World:  world,
 		camera: c,
 		cfg:    cfg,
 	}, nil
 }
 
-func (app *App) InitWithScene(scene common.Scene) {
+func (app *App) InitWithScene(scene common.Scene, actions common.UpdateActionsIn) {
 	app.scene = scene
-	app.World.SetContactListener(scene)
 	scene.Init()
-	app.initCallbacks()
+	app.initCallbacks(actions)
 }
 
-func (app *App) initCallbacks() {
+func (app *App) initCallbacks(actions common.UpdateActionsIn) {
 	app.Window.SetKeyCallback(app.scene.Callback)
 	app.Window.SetMouseButtonCallback(app.scene.MouseCallback)
 	app.Window.SetScrollCallback(app.scene.ScrollCallback)
 	app.Window.SetCursorPosCallback(app.scene.CursorPositionCallback)
 	app.updateActions = make([]func(), 0)
 	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
-	if app.cfg.Physics.Enable {
-		app.updateActions = append(app.updateActions, func() {
-			app.World.Step(timeStep, velocityIterations, positionIterations)
-		})
-	}
+	app.updateActions = append(app.updateActions, actions.Actions...)
 	app.updateActions = append(app.updateActions, app.scene.Update)
 }
 

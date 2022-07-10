@@ -1,7 +1,6 @@
 package scenes
 
 import (
-	"github.com/ByteArena/box2d"
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -9,16 +8,14 @@ import (
 
 type Base struct {
 	DrawObjects *common.DrawableCollection
-	World       *box2d.B2World
 	Cfg         *common.Config
 	Window      *glfw.Window
 	Camera      *graphics.Camera
 }
 
-func NewBase(w *box2d.B2World, cfg *common.Config, win *glfw.Window, c *graphics.Camera) Base {
+func NewBase(cfg *common.Config, win *glfw.Window, c *graphics.Camera) Base {
 	return Base{
 		DrawObjects: common.NewDrawableCollection(),
-		World:       w,
 		Cfg:         cfg,
 		Window:      win,
 		Camera:      c,
@@ -58,20 +55,4 @@ func (b *Base) ScrollCallback(w *glfw.Window, xoff, yoff float64) {
 
 func (b *Base) CursorPositionCallback(w *glfw.Window, xpos, ypos float64) {
 	b.Camera.CursorPositionCallback(xpos, ypos)
-}
-
-func (b *Base) BeginContact(contact box2d.B2ContactInterface) {
-
-}
-
-func (b *Base) EndContact(contact box2d.B2ContactInterface) {
-
-}
-
-func (b *Base) PreSolve(contact box2d.B2ContactInterface, oldManifold box2d.B2Manifold) {
-
-}
-
-func (b *Base) PostSolve(contact box2d.B2ContactInterface, impulse *box2d.B2ContactImpulse) {
-
 }

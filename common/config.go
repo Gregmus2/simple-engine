@@ -1,6 +1,8 @@
 package common
 
 import (
+	"github.com/creasty/defaults"
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -8,59 +10,32 @@ import (
 
 type Config struct {
 	Window struct {
-		Title  string
-		W      int
-		H      int
+		Title  string `default:"Type my name in config.yaml"`
+		W      int    `default:"1024"`
+		H      int    `default:"768"`
 		Center *Pos
 	}
-	Physics struct {
-		Enable  bool
-		Scale   float64
-		Gravity struct {
-			X float64
-			Y float64
-		}
-	}
 	Graphics struct {
-		Scale float32
-		Debug bool
+		Scale float32 `default:"1"`
+		Debug bool    `default:"false"`
 	}
 }
 
-func NewConfig() (*Config, error) {
-	cfg := &Config{
-		Window: struct {
-			Title  string
-			W      int
-			H      int
-			Center *Pos
-		}{
-			Title: "Type my name in config.yaml",
-			W:     1024,
-			H:     768,
-		},
-		Physics: struct {
-			Enable  bool
-			Scale   float64
-			Gravity struct {
-				X float64
-				Y float64
-			}
-		}{
-			Scale: 100,
-			Gravity: struct {
-				X float64
-				Y float64
-			}{
-				X: 0,
-				Y: -5,
-			},
-		},
-		Graphics: struct {
-			Scale float32
-			Debug bool
-		}{Scale: 100},
+func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	if err := defaults.Set(c); err != nil {
+		return errors.Wrap(err, "error setting defaults")
 	}
+
+	type plain Config
+	if err := unmarshal((*plain)(c)); err != nil {
+		return errors.Wrap(err, "error unmarshalling")
+	}
+
+	return nil
+}
+
+func NewConfig() (*Config, error) {
+	cfg := &Config{}
 
 	yamlFile, err := ioutil.ReadFile("config.yaml")
 	if !os.IsNotExist(err) {

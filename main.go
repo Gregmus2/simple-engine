@@ -3,8 +3,6 @@ package engine
 import (
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
-	"github.com/Gregmus2/simple-engine/objects"
-	"github.com/Gregmus2/simple-engine/physics"
 	"github.com/Gregmus2/simple-engine/scenes"
 	"go.uber.org/dig"
 )
@@ -40,14 +38,6 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Provide(physics.NewWorld); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(objects.NewObjectFactory); err != nil {
-		return nil, err
-	}
-
 	if err := c.Provide(graphics.NewCamera); err != nil {
 		return nil, err
 	}
@@ -57,10 +47,6 @@ func BuildContainer() (*dig.Container, error) {
 	}
 
 	if err := c.Provide(scenes.NewBase); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(scenes.NewDemo); err != nil {
 		return nil, err
 	}
 

@@ -1,7 +1,6 @@
 package common
 
 import (
-	"github.com/ByteArena/box2d"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
@@ -18,7 +17,6 @@ type Scene interface {
 	MouseCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey)
 	ScrollCallback(w *glfw.Window, xoff, yoff float64)
 	CursorPositionCallback(w *glfw.Window, xpos, ypos float64)
-	box2d.B2ContactListenerInterface
 }
 
 type Init interface {
