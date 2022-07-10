@@ -39,7 +39,7 @@ func (app *App) initCallbacks() {
 	app.Window.SetMouseButtonCallback(app.scene.MouseCallback)
 	app.Window.SetScrollCallback(app.scene.ScrollCallback)
 	app.Window.SetCursorPosCallback(app.scene.CursorPositionCallback)
-	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
+	app.updateActions = append([]func(){app.scene.PreUpdate}, app.updateActions...)
 	app.updateActions = append(app.updateActions, app.scene.Update)
 }
 
