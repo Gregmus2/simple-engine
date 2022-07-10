@@ -19,8 +19,7 @@ func NewOpenGL(cfg *common.Config, init common.Init) (*OpenGL, error) {
 
 	gl.Enable(gl.MULTISAMPLE)
 
-	err := init.OpenGL()
-	if err != nil {
+	if err := init.OpenGL(); err != nil {
 		return nil, err
 	}
 

@@ -9,9 +9,8 @@ import (
 )
 
 type App struct {
-	Window *glfw.Window
-	GL     *graphics.OpenGL
-
+	Window        *glfw.Window
+	GL            *graphics.OpenGL
 	cfg           *common.Config
 	updateActions []func()
 	camera        *graphics.Camera
@@ -19,29 +18,29 @@ type App struct {
 	quit          bool
 }
 
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera) (*App, error) {
+func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera, a common.UpdateActionsIn) (*App, error) {
 	return &App{
-		Window: window,
-		GL:     gl,
-		camera: c,
-		cfg:    cfg,
+		Window:        window,
+		GL:            gl,
+		camera:        c,
+		cfg:           cfg,
+		updateActions: a.Actions,
 	}, nil
 }
 
-func (app *App) InitWithScene(scene common.Scene, actions common.UpdateActionsIn) {
+func (app *App) InitWithScene(scene common.Scene) {
 	app.scene = scene
 	scene.Init()
-	app.initCallbacks(actions)
+	app.initCallbacks()
 }
 
-func (app *App) initCallbacks(actions common.UpdateActionsIn) {
+func (app *App) initCallbacks() {
 	app.Window.SetKeyCallback(app.scene.Callback)
 	app.Window.SetMouseButtonCallback(app.scene.MouseCallback)
 	app.Window.SetScrollCallback(app.scene.ScrollCallback)
 	app.Window.SetCursorPosCallback(app.scene.CursorPositionCallback)
 	app.updateActions = make([]func(), 0)
 	app.updateActions = append(app.updateActions, app.scene.PreUpdate)
-	app.updateActions = append(app.updateActions, actions.Actions...)
 	app.updateActions = append(app.updateActions, app.scene.Update)
 }
 

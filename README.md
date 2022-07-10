@@ -14,9 +14,9 @@ It is providing
 
 * With your buildContainer method you can provide additional structures into your application
   (actually into dig service container (go.uber.org/dig))
-* You should implement Scene interface to replace scenes.Demo scene.
+* You should implement Scene interface.
 You can use `scenes.Base` as embedded structure
-* You can use `objects.ObjectFactory` structure as embedded in your factory to create new objects.
-* Also you need to implement `common.Init` interface, at least with empty content
+* Also, you can implement `common.Init` interface to modify OpenGL settings with `Decorate`
+uber method instead of `Provide`.
 
 You can check https://github.com/Gregmus2/simple-engine-example as an example. 

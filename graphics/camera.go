@@ -1,7 +1,6 @@
 package graphics
 
 import (
-	"fmt"
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
@@ -36,7 +35,6 @@ func (c *Camera) Scale() float32 {
 func (c *Camera) Move(x, y float64) {
 	c.x += x
 	c.y += -y
-	fmt.Printf("%f %f\n", c.x, c.y)
 }
 
 func (c *Camera) Zoom(scale float32) {
