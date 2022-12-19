@@ -11,19 +11,17 @@ import (
 type App struct {
 	Window        *glfw.Window
 	GL            *graphics.OpenGL
-	cfg           *common.Config
 	updateActions []func()
 	camera        *graphics.Camera
 	scene         common.Scene
 	quit          bool
 }
 
-func NewApp(cfg *common.Config, window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera, a common.UpdateActionsIn) (*App, error) {
+func NewApp(window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera, a common.UpdateActionsIn) (*App, error) {
 	return &App{
 		Window:        window,
 		GL:            gl,
 		camera:        c,
-		cfg:           cfg,
 		updateActions: a.Actions,
 	}, nil
 }

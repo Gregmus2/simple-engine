@@ -3,11 +3,19 @@ package graphics
 import (
 	"fmt"
 	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/sirupsen/logrus"
 	"strings"
 )
 
-type Program struct {
+var Program *ProgramManager
+
+func DefineProgram(_ *OpenGL, _ *glfw.Window) {
+	Program = &ProgramManager{}
+	Program.generateProgram()
+}
+
+type ProgramManager struct {
 	program uint32
 }
 
@@ -28,14 +36,7 @@ const fragmentShaderTemplate string = `
     }
 ` + "\x00"
 
-func NewProgram() *Program {
-	p := &Program{}
-	p.generateProgram()
-
-	return p
-}
-
-func (c *Program) generateProgram() {
+func (c *ProgramManager) generateProgram() {
 	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
@@ -56,12 +57,12 @@ func (c *Program) generateProgram() {
 	gl.DeleteShader(fragmentShader)
 }
 
-func (c *Program) ApplyProgram(color Color) {
+func (c *ProgramManager) ApplyProgram(color Color) {
 	gl.UseProgram(c.program)
 	gl.Uniform3f(gl.GetUniformLocation(c.program, gl.Str("color\x00")), color.R, color.G, color.B)
 }
 
-func (c *Program) compileShader(source string, shaderType uint32) (uint32, error) {
+func (c *ProgramManager) compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
 	csources, free := gl.Strs(source)

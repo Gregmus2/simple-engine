@@ -12,14 +12,14 @@ type Camera struct {
 	lastX, lastY           float64
 }
 
-func NewCamera(cfg *common.Config) *Camera {
+func NewCamera() *Camera {
 	return &Camera{
 		x:         0,
 		y:         0,
-		scale:     float64(cfg.Graphics.Scale),
-		baseScale: float64(cfg.Graphics.Scale),
-		hW:        float64(cfg.Window.W / 2),
-		hH:        float64(cfg.Window.H / 2),
+		scale:     float64(common.Config.Graphics.Scale),
+		baseScale: float64(common.Config.Graphics.Scale),
+		hW:        float64(common.Config.Window.W / 2),
+		hH:        float64(common.Config.Window.H / 2),
 	}
 }
 

@@ -8,15 +8,13 @@ import (
 
 type Base struct {
 	DrawObjects *common.DrawableCollection
-	Cfg         *common.Config
 	Window      *glfw.Window
 	Camera      *graphics.Camera
 }
 
-func NewBase(cfg *common.Config, win *glfw.Window, c *graphics.Camera) Base {
+func NewBase(win *glfw.Window, c *graphics.Camera) Base {
 	return Base{
 		DrawObjects: common.NewDrawableCollection(),
-		Cfg:         cfg,
 		Window:      win,
 		Camera:      c,
 	}

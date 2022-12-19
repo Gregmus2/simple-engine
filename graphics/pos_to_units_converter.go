@@ -1,33 +1,19 @@
 package graphics
 
-import (
-	"github.com/Gregmus2/simple-engine/common"
-)
+import "github.com/Gregmus2/simple-engine/common"
 
-type PosToUnitsConverter struct {
-	hW float32
-	hH float32
+func PosToUnitsX(x float32) float32 {
+	return x/float32(common.Config.Window.W/2) - 1
 }
 
-func NewPosToUnitsConverter(cfg *common.Config) *PosToUnitsConverter {
-	return &PosToUnitsConverter{
-		hW: float32(cfg.Window.W / 2),
-		hH: float32(cfg.Window.H / 2),
-	}
+func PosToUnitsY(y float32) float32 {
+	return y/float32(common.Config.Window.H/2) - 1
 }
 
-func (ph *PosToUnitsConverter) X(x float32) float32 {
-	return x/ph.hW - 1
+func PosToUnitsW(w float32) float32 {
+	return w / float32(common.Config.Window.W/2)
 }
 
-func (ph *PosToUnitsConverter) Y(y float32) float32 {
-	return y/ph.hH - 1
-}
-
-func (ph *PosToUnitsConverter) W(w float32) float32 {
-	return w / ph.hW
-}
-
-func (ph *PosToUnitsConverter) H(h float32) float32 {
-	return h / ph.hH
+func PosToUnitsH(h float32) float32 {
+	return h / float32(common.Config.Window.H/2)
 }

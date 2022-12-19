@@ -10,27 +10,11 @@ import (
 func BuildContainer() (*dig.Container, error) {
 	c := dig.New()
 
-	if err := c.Provide(common.NewConfig); err != nil {
+	if err := c.Invoke(common.DefineConfig); err != nil {
 		return nil, err
 	}
 
 	if err := c.Provide(graphics.NewWindow); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(graphics.NewProgram); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(graphics.NewPosToUnitsConverter); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(graphics.NewPercentToPosConverter); err != nil {
-		return nil, err
-	}
-
-	if err := c.Provide(graphics.NewShapeFactory); err != nil {
 		return nil, err
 	}
 
@@ -51,6 +35,10 @@ func BuildContainer() (*dig.Container, error) {
 	}
 
 	if err := c.Provide(NewInit); err != nil {
+		return nil, err
+	}
+
+	if err := c.Invoke(graphics.DefineProgram); err != nil {
 		return nil, err
 	}
 
