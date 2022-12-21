@@ -8,61 +8,55 @@ import (
 	"strings"
 )
 
-var Program *ProgramManager
+var Programs = struct {
+	Default *Program
+	Text    *Program
+}{}
 
-func DefineProgram(_ *OpenGL, _ *glfw.Window) {
-	Program = &ProgramManager{}
-	Program.generateProgram()
+func DefinePrograms(_ *OpenGL, _ *glfw.Window) {
+	Programs = struct {
+		Default *Program
+		Text    *Program
+	}{Default: &Program{}, Text: &Program{}}
+	Programs.Default.generateProgram(defaultVertexShaderSource, defaultFragmentShaderTemplate)
+	Programs.Text.generateProgram(textVertexShaderSource, textFragmentShaderTemplate)
+	//projection := mgl32.Ortho2D(0, float32(common.Config.Window.W), 0, float32(common.Config.Window.H))
+	//gl.UseProgram(Programs.Text.program)
+	//gl.UniformMatrix4fv(gl.GetUniformLocation(Programs.Text.program, gl.Str("projection\x00")), 1, false, &projection[0])
+	//gl.UseProgram(0)
 }
 
-type ProgramManager struct {
+type Program struct {
 	program uint32
 }
 
-const vertexShaderSource string = `
-    #version 410
-    in vec3 vp;
-    void main() {
-        gl_Position = vec4(vp, 1.0);
-    }
-` + "\x00"
-
-const fragmentShaderTemplate string = `
-    #version 410
-    out vec4 frag_colour;
-	uniform vec3 color;
-    void main() {
-        frag_colour = vec4(color, 1.0);
-    }
-` + "\x00"
-
-func (c *ProgramManager) generateProgram() {
-	vertexShader, err := c.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+func (p *Program) generateProgram(vertexShaderSource, fragmentShaderTemplate string) {
+	vertexShader, err := p.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return
 	}
 
-	fragmentShader, err := c.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
+	fragmentShader, err := p.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
 	if err != nil {
 		logrus.WithError(err).Error("error on compile vertex shader")
 		return
 	}
 
-	c.program = gl.CreateProgram()
-	gl.AttachShader(c.program, vertexShader)
-	gl.AttachShader(c.program, fragmentShader)
-	gl.LinkProgram(c.program)
+	p.program = gl.CreateProgram()
+	gl.AttachShader(p.program, vertexShader)
+	gl.AttachShader(p.program, fragmentShader)
+	gl.LinkProgram(p.program)
 	gl.DeleteShader(vertexShader)
 	gl.DeleteShader(fragmentShader)
 }
 
-func (c *ProgramManager) ApplyProgram(color Color) {
-	gl.UseProgram(c.program)
-	gl.Uniform3f(gl.GetUniformLocation(c.program, gl.Str("color\x00")), color.R, color.G, color.B)
+func (p *Program) ApplyProgram(color Color) {
+	gl.UseProgram(p.program)
+	gl.Uniform3f(gl.GetUniformLocation(p.program, gl.Str("color\x00")), color.R, color.G, color.B)
 }
 
-func (c *ProgramManager) compileShader(source string, shaderType uint32) (uint32, error) {
+func (p *Program) compileShader(source string, shaderType uint32) (uint32, error) {
 	shader := gl.CreateShader(shaderType)
 
 	csources, free := gl.Strs(source)

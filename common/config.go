@@ -43,6 +43,10 @@ type ConfigModel struct {
 	Graphics struct {
 		Scale float32 `default:"1"`
 		Debug bool    `default:"false"`
+		Font  string
+	}
+	Debug struct {
+		FPS bool `default:"false"`
 	}
 }
 

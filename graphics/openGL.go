@@ -18,6 +18,10 @@ func NewOpenGL(init common.Init) (*OpenGL, error) {
 	log.Println("OpenGL version", version)
 
 	gl.Enable(gl.MULTISAMPLE)
+	// to render text, which is semi-transparent textures
+	gl.Enable(gl.BLEND)
+	// Factor is equal to 1−alpha of the source color vector
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	if err := init.OpenGL(); err != nil {
 		return nil, err
@@ -44,28 +48,39 @@ func NewOpenGL(init common.Init) (*OpenGL, error) {
 	return &OpenGL{}, nil
 }
 
-func MakeVBO(points []float32) *uint32 {
+func MakeDefaultVertexObjects(points []float32) (*uint32, *uint32) {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
 
-	return &vbo
-}
-
-func MakeVAO(vbo *uint32) *uint32 {
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 
 	gl.EnableVertexAttribArray(0)
-	gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
 
-	return &vao
+	return &vbo, &vao
+}
+
+func MakeTextVertexObjects() (*uint32, *uint32) {
+	var vao, vbo uint32
+	gl.GenVertexArrays(1, &vao)
+	gl.GenBuffers(1, &vbo)
+	gl.BindVertexArray(vao)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, 4*6*4, nil, gl.DYNAMIC_DRAW)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 4*4, nil)
+
+	return &vbo, &vao
 }
 
 func ClearBuffers(vbo, vao *uint32) {
+	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	gl.BindVertexArray(0)
 	gl.DisableVertexAttribArray(0)
 	gl.DeleteBuffers(1, vbo)
 	gl.DeleteVertexArrays(1, vao)
