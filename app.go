@@ -49,14 +49,14 @@ func (app *App) Loop() {
 
 	t := time.Now()
 	for !app.Window.ShouldClose() {
-		app.OnUpdate(time.Now().Sub(t).Milliseconds())
+		dt := time.Now().Sub(t).Milliseconds()
+		t = time.Now()
+		app.OnUpdate(dt)
 		app.OnRender()
 
 		if app.quit {
 			break
 		}
-
-		t = time.Now()
 	}
 
 	app.Destroy()
