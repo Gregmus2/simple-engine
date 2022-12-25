@@ -10,8 +10,8 @@ type Drawable interface {
 
 type Scene interface {
 	Init()
-	PreUpdate()
-	Update()
+	PreUpdate(dt int64)
+	Update(dt int64)
 	Drawable() *DrawableCollection
 	Callback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey)
 	MouseCallback(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey)

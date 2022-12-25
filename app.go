@@ -6,12 +6,13 @@ import (
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type App struct {
 	Window        *glfw.Window
 	GL            *graphics.OpenGL
-	updateActions []func()
+	updateActions []func(dt int64)
 	camera        *graphics.Camera
 	scene         common.Scene
 	quit          bool
@@ -37,7 +38,7 @@ func (app *App) initCallbacks() {
 	app.Window.SetMouseButtonCallback(app.scene.MouseCallback)
 	app.Window.SetScrollCallback(app.scene.ScrollCallback)
 	app.Window.SetCursorPosCallback(app.scene.CursorPositionCallback)
-	app.updateActions = append([]func(){app.scene.PreUpdate}, app.updateActions...)
+	app.updateActions = append([]func(dt int64){app.scene.PreUpdate}, app.updateActions...)
 	app.updateActions = append(app.updateActions, app.scene.Update)
 }
 
@@ -46,13 +47,16 @@ func (app *App) Loop() {
 		panic("scene isn't set")
 	}
 
+	t := time.Now()
 	for !app.Window.ShouldClose() {
-		app.OnUpdate()
+		app.OnUpdate(time.Now().Sub(t).Milliseconds())
 		app.OnRender()
 
 		if app.quit {
 			break
 		}
+
+		t = time.Now()
 	}
 
 	app.Destroy()
@@ -63,9 +67,9 @@ func (app *App) Destroy() {
 	glfw.Terminate()
 }
 
-func (app *App) OnUpdate() {
+func (app *App) OnUpdate(dt int64) {
 	for _, action := range app.updateActions {
-		action()
+		action(dt)
 	}
 }
 

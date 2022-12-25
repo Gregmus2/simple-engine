@@ -24,11 +24,11 @@ func (b *Base) Init() {
 
 }
 
-func (b *Base) PreUpdate() {
+func (b *Base) PreUpdate(_ int64) {
 
 }
 
-func (b *Base) Update() {
+func (b *Base) Update(_ int64) {
 
 }
 

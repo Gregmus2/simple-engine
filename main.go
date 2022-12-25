@@ -3,6 +3,7 @@ package engine
 import (
 	"github.com/Gregmus2/simple-engine/common"
 	"github.com/Gregmus2/simple-engine/graphics"
+	"github.com/Gregmus2/simple-engine/modules"
 	"github.com/Gregmus2/simple-engine/scenes"
 	"go.uber.org/dig"
 )
@@ -23,6 +24,10 @@ func BuildContainer() (*dig.Container, error) {
 	}
 
 	if err := c.Provide(graphics.NewCamera); err != nil {
+		return nil, err
+	}
+
+	if err := c.Provide(modules.NewFPS); err != nil {
 		return nil, err
 	}
 

@@ -4,12 +4,12 @@ import "go.uber.org/dig"
 
 type UpdateActionOut struct {
 	dig.Out
-	Action func() `group:"update_actions"`
+	Action func(dt int64) `group:"update_actions"`
 }
 
 type UpdateActionsIn struct {
 	dig.In
-	Actions []func() `group:"update_actions"`
+	Actions []func(dt int64) `group:"update_actions"`
 }
 
 type Pos struct {
