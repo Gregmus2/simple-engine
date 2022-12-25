@@ -41,6 +41,7 @@ type ConfigModel struct {
 		Center *Pos
 	}
 	Graphics struct {
+		FPS   int     `default:"60"`
 		Scale float32 `default:"1"`
 		Debug bool    `default:"false"`
 		Font  string

@@ -47,9 +47,14 @@ func (app *App) Loop() {
 		panic("scene isn't set")
 	}
 
+	targetDT := int64(1000 / common.Config.Graphics.FPS)
 	t := time.Now()
 	for !app.Window.ShouldClose() {
 		dt := time.Now().Sub(t).Milliseconds()
+		if dt < targetDT {
+			time.Sleep(time.Millisecond * time.Duration(targetDT-dt))
+			dt = time.Now().Sub(t).Milliseconds()
+		}
 		t = time.Now()
 		app.OnUpdate(dt)
 		app.OnRender()
