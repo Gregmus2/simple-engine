@@ -5,3 +5,7 @@ window:
 graphics:
   scale: 100
   debug: false
+  font:
+    arial: fonts/Arialn.ttf
+debug:
+    fps: false

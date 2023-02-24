@@ -17,32 +17,38 @@ const defaultFragmentShaderTemplate string = `
     }
 ` + "\x00"
 
-const textVertexShaderSource string = `
+const textVertexShaderSource = `
 	#version 420
-	layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
-	out vec2 TexCoords;
+	in vec2 vert;
+	in vec2 vertTexCoord;
 
-	//uniform mat4 projection;
+	//window res
+	uniform vec2 resolution;
+	out vec2 fragTexCoord;
 
-	void main()
-	{
-		//gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
-		gl_Position = vec4(vertex.xy, 0.0, 1.0);
-		TexCoords = vertex.zw;
+	void main() {
+	   // convert the rectangle from pixels to 0.0 to 1.0
+	   vec2 zeroToOne = vert / resolution;
+	   // convert from 0->1 to 0->2
+	   vec2 zeroToTwo = zeroToOne * 2.0;
+	   // convert from 0->2 to -1->+1 (clipspace)
+	   vec2 clipSpace = zeroToTwo - 1.0;
+	   fragTexCoord = vertTexCoord;
+	   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
 	}
 ` + "\x00"
 
-const textFragmentShaderTemplate string = `
+const textFragmentShaderTemplate = `
 	#version 420
-	in vec2 TexCoords;
-	out vec4 frag_colour;
+	in vec2 fragTexCoord;
+	out vec4 outputColor;
 	
-	layout (binding = 0) uniform sampler2D text; // bitmap image
-	uniform vec3 color;
+	uniform sampler2D tex;
+	uniform vec4 textColor;
 	
 	void main()
 	{    
-		vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
-		frag_colour = vec4(color, 1.0) * sampled;
-	} 
+		vec4 sampled = vec4(1.0, 1.0, 1.0, texture(tex, fragTexCoord).r);
+		outputColor = textColor * sampled;
+	}
 ` + "\x00"

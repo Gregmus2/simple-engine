@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -20,10 +20,6 @@ func DefinePrograms(_ *OpenGL, _ *glfw.Window) {
 	}{Default: &Program{}, Text: &Program{}}
 	Programs.Default.generateProgram(defaultVertexShaderSource, defaultFragmentShaderTemplate)
 	Programs.Text.generateProgram(textVertexShaderSource, textFragmentShaderTemplate)
-	//projection := mgl32.Ortho2D(0, float32(common.Config.Window.W), 0, float32(common.Config.Window.H))
-	//gl.UseProgram(Programs.Text.program)
-	//gl.UniformMatrix4fv(gl.GetUniformLocation(Programs.Text.program, gl.Str("projection\x00")), 1, false, &projection[0])
-	//gl.UseProgram(0)
 }
 
 type Program struct {
@@ -33,14 +29,12 @@ type Program struct {
 func (p *Program) generateProgram(vertexShaderSource, fragmentShaderTemplate string) {
 	vertexShader, err := p.compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
-		logrus.WithError(err).Error("error on compile vertex shader")
-		return
+		panic(errors.Wrap(err, "error on compile vertex shader"))
 	}
 
 	fragmentShader, err := p.compileShader(fragmentShaderTemplate, gl.FRAGMENT_SHADER)
 	if err != nil {
-		logrus.WithError(err).Error("error on compile vertex shader")
-		return
+		panic(errors.Wrap(err, "error on compile fragment shader"))
 	}
 
 	p.program = gl.CreateProgram()

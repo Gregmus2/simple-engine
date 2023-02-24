@@ -44,7 +44,7 @@ type ConfigModel struct {
 		FPS   int     `default:"60"`
 		Scale float32 `default:"1"`
 		Debug bool    `default:"false"`
-		Font  string
+		Font  map[string]string
 	}
 	Debug struct {
 		FPS bool `default:"false"`

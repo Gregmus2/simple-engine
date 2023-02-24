@@ -1,6 +1,7 @@
 package graphics
 
 import (
+	"fmt"
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"math"
 )
@@ -68,52 +69,62 @@ func Line(x1, y1, x2, y2 float32, color Color) {
 	gl.UseProgram(0)
 }
 
-func Text(x, y float32, text string, color Color) {
-	// todo replace
-	scale := 20
+func Text(x, y, scale float32, text string, font *Font, color Color) {
+	indices := []rune(text)
 
-	// activate corresponding render state
-	Programs.Text.ApplyProgram(color)
-	gl.Uniform1i(gl.GetUniformLocation(Programs.Text.program, gl.Str("text\x00")), 0)
-	vbo, vao := MakeTextVertexObjects()
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	gl.UseProgram(font.program)
+	gl.Uniform4f(gl.GetUniformLocation(font.program, gl.Str("textColor\x00")), color.R, color.G, color.B, color.A)
+
 	gl.ActiveTexture(gl.TEXTURE0)
-	gl.BindVertexArray(*vao)
+	gl.BindVertexArray(font.vao)
 
-	for _, r := range text {
-		ch := Font.Characters[r]
-		xpos := x + float32(ch.Bearing.X*scale)
-		ypos := y - float32((ch.Size.Y-ch.Bearing.Y)*scale)
-		w := ch.Size.X * scale
-		h := ch.Size.Y * scale
-		// update VBO for each character
-		vertexes := textVertexes(xpos, ypos, float32(w), float32(h))
-		// render glyph texture over quad
-		gl.BindTexture(gl.TEXTURE_2D, ch.Texture)
-		// update content of VBO memory
-		gl.BindBuffer(gl.ARRAY_BUFFER, *vbo)
-		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(vertexes)*4, gl.Ptr(vertexes))
+	// Iterate through all characters in string
+	for _, r := range indices {
+		ch, ok := font.Characters[r]
+
+		//load missing runes in batches of 32
+		if !ok {
+			panic("glyph wasn't generated for this character")
+		}
+
+		//skip runes that are not in font chacter range
+		if !ok {
+			panic(fmt.Errorf("char %s is not supported", string(r)))
+		}
+
+		//calculate position and size for current rune
+		xpos := x + float32(ch.bearingH)*scale
+		ypos := y - float32(ch.height-ch.bearingV)*scale
+		w := float32(ch.width) * scale
+		h := float32(ch.height) * scale
+		vertices := []float32{
+			xpos + w, ypos, 1.0, 0.0,
+			xpos, ypos, 0.0, 0.0,
+			xpos, ypos + h, 0.0, 1.0,
+
+			xpos, ypos + h, 0.0, 1.0,
+			xpos + w, ypos + h, 1.0, 1.0,
+			xpos + w, ypos, 1.0, 0.0,
+		}
+
+		gl.BindTexture(gl.TEXTURE_2D, ch.textureID)
+		gl.BindBuffer(gl.ARRAY_BUFFER, font.vbo)
+
+		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(vertices)*4, gl.Ptr(vertices))
+		gl.DrawArrays(gl.TRIANGLES, 0, 16)
+
 		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
-		// render quad
-		gl.DrawArrays(gl.TRIANGLES, 0, 6)
-		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += float32(int(ch.Advance>>6) * scale) // bitshift by 6 to get value in pixels (2^6 = 64)
+		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		x += float32(ch.advance>>6) * scale // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+
 	}
 
-	ClearBuffers(vbo, vao)
+	//clear opengl textures and programs
+	gl.BindVertexArray(0)
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 	gl.UseProgram(0)
-}
-
-func textVertexes(x, y, w, h float32) []float32 {
-	x, y, w, h = PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(w), PosToUnitsH(h)
-
-	return []float32{
-		x, y + h, 0, 0,
-		x, y, 0, 1,
-		x + w, y, 1, 1,
-
-		x, y + h, 0, 0,
-		x + w, y, 1, 1,
-		x + w, y + h, 1, 0,
-	}
+	gl.Disable(gl.BLEND)
 }

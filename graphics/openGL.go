@@ -22,6 +22,14 @@ func NewOpenGL(init common.Init) (*OpenGL, error) {
 	gl.Enable(gl.BLEND)
 	// Factor is equal to 1−alpha of the source color vector
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	/*
+		OpenGL requires that textures all have a 4-byte alignment e.g. their size is always a multiple of 4 bytes.
+		Normally this won't be a problem since most textures have a width that is a multiple of 4 and/or
+		use 4 bytes per pixel, but since we now only use a single byte per pixel,
+		the texture can have any possible width. By setting its unpack alignment to 1
+		we ensure there are no alignment issues (which could cause segmentation faults)
+	*/
+	gl.PixelStorei(gl.UNPACK_ALIGNMENT, 1)
 
 	if err := init.OpenGL(); err != nil {
 		return nil, err

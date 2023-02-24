@@ -43,10 +43,6 @@ func BuildContainer() (*dig.Container, error) {
 		return nil, err
 	}
 
-	if err := c.Invoke(graphics.DefineFont); err != nil {
-		return nil, err
-	}
-
 	if err := c.Invoke(graphics.DefinePrograms); err != nil {
 		return nil, err
 	}

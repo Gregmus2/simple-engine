@@ -18,19 +18,14 @@ type App struct {
 	quit          bool
 }
 
-func NewApp(window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera, a common.UpdateActionsIn) (*App, error) {
+func NewApp(window *glfw.Window, gl *graphics.OpenGL, c *graphics.Camera, a common.UpdateActionsIn, scene common.Scene) (*App, error) {
 	return &App{
 		Window:        window,
 		GL:            gl,
 		camera:        c,
 		updateActions: a.Actions,
+		scene:         scene,
 	}, nil
-}
-
-func (app *App) InitWithScene(scene common.Scene) {
-	app.scene = scene
-	scene.Init()
-	app.initCallbacks()
 }
 
 func (app *App) initCallbacks() {
@@ -46,6 +41,9 @@ func (app *App) Loop() {
 	if app.scene == nil {
 		panic("scene isn't set")
 	}
+
+	app.scene.Init()
+	app.initCallbacks()
 
 	targetDT := int64(1000 / common.Config.Graphics.FPS)
 	t := time.Now()

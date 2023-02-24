@@ -12,8 +12,8 @@ type Base struct {
 	Camera      *graphics.Camera
 }
 
-func NewBase(win *glfw.Window, c *graphics.Camera) Base {
-	return Base{
+func NewBase(win *glfw.Window, c *graphics.Camera) common.Scene {
+	return &Base{
 		DrawObjects: common.NewDrawableCollection(),
 		Window:      win,
 		Camera:      c,
