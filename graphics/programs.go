@@ -11,15 +11,18 @@ import (
 var Programs = struct {
 	Default *Program
 	Text    *Program
+	Texture *Program
 }{}
 
 func DefinePrograms(_ *OpenGL, _ *glfw.Window) {
 	Programs = struct {
 		Default *Program
 		Text    *Program
-	}{Default: &Program{}, Text: &Program{}}
+		Texture *Program
+	}{Default: &Program{}, Text: &Program{}, Texture: &Program{}}
 	Programs.Default.generateProgram(defaultVertexShaderSource, defaultFragmentShaderTemplate)
 	Programs.Text.generateProgram(textVertexShaderSource, textFragmentShaderTemplate)
+	Programs.Texture.generateProgram(textureVertexShaderSource, textureFragmentShaderTemplate)
 }
 
 type Program struct {
@@ -48,6 +51,11 @@ func (p *Program) generateProgram(vertexShaderSource, fragmentShaderTemplate str
 func (p *Program) ApplyProgram(color Color) {
 	gl.UseProgram(p.program)
 	gl.Uniform3f(gl.GetUniformLocation(p.program, gl.Str("color\x00")), color.R, color.G, color.B)
+}
+
+func (p *Program) UniformTexture(texUnit uint32) {
+	gl.UseProgram(p.program)
+	gl.Uniform1i(gl.GetUniformLocation(p.program, gl.Str("tex\x00")), int32(texUnit-gl.TEXTURE0))
 }
 
 func (p *Program) compileShader(source string, shaderType uint32) (uint32, error) {

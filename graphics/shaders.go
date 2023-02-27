@@ -52,3 +52,38 @@ const textFragmentShaderTemplate = `
 		outputColor = textColor * sampled;
 	}
 ` + "\x00"
+
+// textureVertexShaderSource pass data to textureFragmentShaderTemplate via in -> out variables
+const textureVertexShaderSource = `
+	#version 420 core
+	
+	layout (location = 0) in vec3 position;
+	layout (location = 1) in vec3 color;
+	layout (location = 2) in vec2 texCoord;
+	
+	out vec3 frag_colour;
+	out vec2 TexCoord;
+	
+	void main()
+	{
+		gl_Position = vec4(position, 1.0);
+		frag_colour = color;       // pass the color on to the fragment shader
+		TexCoord = texCoord;    // pass the Texture coords on to the fragment shader
+	}
+` + "\x00"
+
+const textureFragmentShaderTemplate = `
+	#version 420 core
+	
+	in vec3 frag_colour;
+	in vec2 TexCoord;
+	
+	out vec4 color;
+	
+	uniform sampler2D tex;
+	
+	void main()
+	{
+		color = texture(tex, TexCoord);
+	}
+` + "\x00"

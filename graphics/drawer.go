@@ -3,7 +3,9 @@ package graphics
 import (
 	"fmt"
 	"github.com/go-gl/gl/v4.6-core/gl"
+	_ "image/png"
 	"math"
+	"unsafe"
 )
 
 const DoublePI float64 = 2.0 * math.Pi
@@ -17,20 +19,6 @@ func Box(x, y, w, h float32, color Color) {
 	gl.UseProgram(0)
 }
 
-func boxVertexes(x, y, w, h float32) []float32 {
-	x, y, w, h = PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(w), PosToUnitsH(h)
-
-	return []float32{
-		x, y, 0,
-		x + w, y, 0,
-		x, y - h, 0,
-
-		x, y - h, 0,
-		x + w, y, 0,
-		x + w, y - h, 0,
-	}
-}
-
 func Circle(x, y, r float32, color Color) {
 	Programs.Default.ApplyProgram(color)
 	circle := circleVertexes(x, y, r, 360)
@@ -38,19 +26,6 @@ func Circle(x, y, r float32, color Color) {
 	gl.DrawArrays(gl.TRIANGLE_FAN, 0, int32(len(circle)/3))
 	ClearBuffers(vbo, vao)
 	gl.UseProgram(0)
-}
-
-func circleVertexes(x, y, r float32, sides int) []float32 {
-	x, y, rW, rH := PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(r), PosToUnitsH(r)
-
-	vertexes := make([]float32, (sides+2)*3)
-	for i := 0; i < (sides+2)*3; i += 3 {
-		vertexes[i] = x + (rW * float32(math.Cos(float64(i)/3*DoublePI/float64(sides))))
-		vertexes[i+1] = y + (rH * float32(math.Sin(float64(i)/3*DoublePI/float64(sides))))
-		vertexes[i+2] = 0
-	}
-
-	return vertexes
 }
 
 func Line(x1, y1, x2, y2 float32, color Color) {
@@ -95,23 +70,10 @@ func Text(x, y, scale float32, text string, font *Font, color Color) {
 			panic(fmt.Errorf("char %s is not supported", string(r)))
 		}
 
-		//calculate position and size for current rune
-		xpos := x + float32(ch.bearingH)*scale
-		ypos := y - float32(ch.height-ch.bearingV)*scale
-		w := float32(ch.width) * scale
-		h := float32(ch.height) * scale
-		vertices := []float32{
-			xpos + w, ypos, 1.0, 0.0,
-			xpos, ypos, 0.0, 0.0,
-			xpos, ypos + h, 0.0, 1.0,
-
-			xpos, ypos + h, 0.0, 1.0,
-			xpos + w, ypos + h, 1.0, 1.0,
-			xpos + w, ypos, 1.0, 0.0,
-		}
-
 		gl.BindTexture(gl.TEXTURE_2D, ch.textureID)
 		gl.BindBuffer(gl.ARRAY_BUFFER, font.vbo)
+
+		vertices := textVertices(x, y, scale, ch)
 
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(vertices)*4, gl.Ptr(vertices))
 		gl.DrawArrays(gl.TRIANGLES, 0, 16)
@@ -127,4 +89,99 @@ func Text(x, y, scale float32, text string, font *Font, color Color) {
 	gl.BindTexture(gl.TEXTURE_2D, 0)
 	gl.UseProgram(0)
 	gl.Disable(gl.BLEND)
+}
+
+func DrawTexture(x, y, w, h float32, texture string) {
+	vertices := textureVertexes(x, y, w, h)
+	indices := []uint32{
+		// rectangle
+		0, 1, 2, // top triangle
+		0, 2, 3, // bottom triangle
+	}
+
+	vao, vbo, ebo := MakeTextureVertexObjects(vertices, indices)
+
+	tex := Textures[texture]
+	Programs.Texture.ApplyProgram(White())
+	tex.Bind(gl.TEXTURE0)
+	Programs.Texture.UniformTexture(tex.texUnit)
+
+	gl.BindVertexArray(*vao)
+	gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, unsafe.Pointer(nil))
+
+	tex.UnBind()
+
+	ClearBuffers(vbo, vao)
+	gl.DeleteBuffers(1, ebo)
+}
+
+func textureVertexes(x, y, w, h float32) []float32 {
+	x, y, w, h = PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(w), PosToUnitsH(h)
+
+	return []float32{
+		// top left
+		x, y, 0.0, // position
+		1.0, 0.0, 0.0, // Color
+		1.0, 0.0, // texture coordinates
+
+		// top right
+		x + w, y, 0.0,
+		0.0, 1.0, 0.0,
+		0.0, 0.0,
+
+		// bottom right
+		x + w, y - h, 0.0,
+		0.0, 0.0, 1.0,
+		0.0, 1.0,
+
+		// bottom left
+		x, y - h, 0.0,
+		1.0, 1.0, 1.0,
+		1.0, 1.0,
+	}
+}
+
+func boxVertexes(x, y, w, h float32) []float32 {
+	x, y, w, h = PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(w), PosToUnitsH(h)
+
+	return []float32{
+		x, y, 0,
+		x + w, y, 0,
+		x, y - h, 0,
+
+		x, y - h, 0,
+		x + w, y, 0,
+		x + w, y - h, 0,
+	}
+}
+
+func circleVertexes(x, y, r float32, sides int) []float32 {
+	x, y, rW, rH := PosToUnitsX(x), PosToUnitsY(y), PosToUnitsW(r), PosToUnitsH(r)
+
+	vertexes := make([]float32, (sides+2)*3)
+	for i := 0; i < (sides+2)*3; i += 3 {
+		vertexes[i] = x + (rW * float32(math.Cos(float64(i)/3*DoublePI/float64(sides))))
+		vertexes[i+1] = y + (rH * float32(math.Sin(float64(i)/3*DoublePI/float64(sides))))
+		vertexes[i+2] = 0
+	}
+
+	return vertexes
+}
+
+// calculate position and size
+func textVertices(x, y, scale float32, ch *Character) []float32 {
+	xPos := x + float32(ch.bearingH)*scale
+	yPos := y - float32(ch.height-ch.bearingV)*scale
+	w := float32(ch.width) * scale
+	h := float32(ch.height) * scale
+
+	return []float32{
+		xPos + w, yPos, 1.0, 0.0,
+		xPos, yPos, 0.0, 0.0,
+		xPos, yPos + h, 0.0, 1.0,
+
+		xPos, yPos + h, 0.0, 1.0,
+		xPos + w, yPos + h, 1.0, 1.0,
+		xPos + w, yPos, 1.0, 0.0,
+	}
 }

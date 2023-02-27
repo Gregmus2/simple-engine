@@ -73,17 +73,45 @@ func MakeDefaultVertexObjects(points []float32) (*uint32, *uint32) {
 	return &vbo, &vao
 }
 
-func MakeTextVertexObjects() (*uint32, *uint32) {
-	var vao, vbo uint32
+func MakeTextureVertexObjects(vertices []float32, indices []uint32) (*uint32, *uint32, *uint32) {
+	var vao, vbo, ebo uint32
 	gl.GenVertexArrays(1, &vao)
 	gl.GenBuffers(1, &vbo)
-	gl.BindVertexArray(vao)
-	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, 4*6*4, nil, gl.DYNAMIC_DRAW)
-	gl.EnableVertexAttribArray(0)
-	gl.VertexAttribPointer(0, 4, gl.FLOAT, false, 4*4, nil)
+	gl.GenBuffers(1, &ebo)
 
-	return &vbo, &vao
+	gl.BindVertexArray(vao)
+
+	// copy vertices data into VBO (it needs to be bound first)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*4, gl.Ptr(vertices), gl.STATIC_DRAW)
+
+	// copy indices into element buffer
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(indices), gl.STATIC_DRAW)
+
+	// size of one whole vertex (sum of attrib sizes)
+	var stride int32 = 3*4 + 3*4 + 2*4
+	var offset = 0
+
+	// position
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, stride, gl.PtrOffset(offset))
+	gl.EnableVertexAttribArray(0)
+	offset += 3 * 4
+
+	// color
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, stride, gl.PtrOffset(offset))
+	gl.EnableVertexAttribArray(1)
+	offset += 3 * 4
+
+	// texture position
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, stride, gl.PtrOffset(offset))
+	gl.EnableVertexAttribArray(2)
+	offset += 2 * 4
+
+	// unbind the VAO (safe practice, so we don't accidentally (mis)configure it later)
+	gl.BindVertexArray(0)
+
+	return &vao, &vbo, &ebo
 }
 
 func ClearBuffers(vbo, vao *uint32) {
